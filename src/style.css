@@ -1,0 +1,71 @@
+#project{
+	width: 600px;
+	height: 450px;
+	border-style: solid;
+}
+
+#tool_bar{
+	width: 240px;
+	height: 450px;
+	float: right;
+	background-color: rgba(0,0,0,0.2);
+
+	visibility: hidden;
+}
+
+#tool_bar_header{
+	width: 240px;
+	height: 40px;
+}
+
+#tool_bar_item{
+	width: 240px;
+	height: 410px;
+}
+
+.tool_bar_button{
+	width: 72px;
+	height: 32px;
+	float: left;
+	border-style: solid;
+	border-width: 4px;
+	border-color: rgba(0,0,0,0.2);
+	background-color:white;
+	text-align: center;
+	font-size:20px;
+}
+
+.in_toolbar_text{
+
+	float: center;
+	text-align: center;
+}
+
+.tool_blank{
+	width: 240px;
+	height: 10px;
+	float:left;
+}
+
+.tool_box_area{
+	width:100px;
+	height:60px;
+	float:left;
+}
+
+.tool_box{
+	width:50px;
+	height:50px;
+	border-style:groove;
+	border-width:5px;
+	font-family:"Arial Black";
+	float:right;
+	text-align: center;
+}
+
+.tool_text{
+	width:130px;
+	height:60px;
+	float:right;
+	text-align: center;
+}
