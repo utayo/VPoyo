@@ -7,22 +7,47 @@
 
 	<body>
 		<div id="project">
-			<div id="tool_bar">
+
+			<div id="coding_area">
+
+				<div id="option_bar">
+					<div id="testA" class="option">
+						<a href="#" class="option_link">testA</a>
+					</div>
+					<div id="testB" class="option">
+						<a href="#" class="option_link">testB</a>
+					</div>
+				</div>
+
+				<div id="struct_area">
+					<div id="test_line" class="line">
+						<div class="line_number">1</div>
+						<div id="test_struct_line" class="line_struct">
+							aaa
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="tool_bar" style="display:block">
 				<div id="tool_bar_header">
-					<a href="#new"><div class="tool_bar_button">New</div></a>
-					<a href="#assign"><div class="tool_bar_button">Assign</div></a>
-					<a href="#other"><div class="tool_bar_button">Other</div></a>
+					<a href="#new" class="tool_link" onclick="tool_bar_switch('new')"><div class="tool_bar_button">New</div></a>
+					<a href="#assign" class="tool_link" onclick="tool_bar_switch('assign')"><div class="tool_bar_button">Assign</div></a>
+					<a href="#other" class="tool_link" onclick="tool_bar_switch('other')"><div class="tool_bar_button">Other</div></a>
 				</div>
 
 				<div id="tool_bar_item">
 					<div id="tool_bar_new">
 						<div id="new_var" class="tool_area">
+
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
+								<a href="#" class="tool_link">
 								<div class="tool_box">
 									New</br>
 									Var
 								</div>
+								</a>
 							</div>
 							<div class="tool_text">
 								Declare New</br>
@@ -34,10 +59,12 @@
 						<div id="new_func" class="tool_area">
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
+								<a href="#" class="tool_link">
 								<div class="tool_box">
 									New</br>
 									Func
 								</div>
+								</a>
 							</div>
 							<div class="tool_text">
 								Declare New</br>
@@ -46,15 +73,17 @@
 							<div class="tool_blank"></div>
 						</div>
 					</div>
-					
+
 					<div id="tool_bar_assign">
 						<div id="assign_num" class="tool_area">
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
+								<a href="#" class="tool_link">
 								<div class="tool_box">
 									Fixed</br>
 									Num
 								</div>
+								</a>
 							</div>
 							<div class="tool_text">
 								Assign</br>
@@ -62,11 +91,34 @@
 							</div>
 							<div class="tool_blank"></div>
 						</div>
-				</div>
+
+						<div id="assign_str" class="tool_area">
+							<div class="tool_blank"></div>
+							<div class="tool_box_area">
+								<a href="#" class="tool_link">
+								<div class="tool_box">
+									String</br>
+									Text
+								</div>
+								</a>
+							</div>
+							<div class="tool_text">
+								Assign</br>
+								a Fixed Number
+							</div>
+							<div class="tool_blank"></div>
+						</div>
+					</div>
+
+					<div id="tool_bar_other">
+
+					</div>
+
 				</div>
 			</div>
 		</div>
 
 		<button onclick="tool_bar_visible()">Tool Bar</button>
+		<button onclick="add_new_line()">Add New Line</button>
 	</body>
 </html>

@@ -1,7 +1,62 @@
 #project{
-	width: 600px;
+	background-color: rgba(255,0,0,0.1);
+	width: 1000px;
 	height: 450px;
 	border-style: solid;
+}
+
+#coding_area{
+	background-color: rgba(255,255,255,0.5);
+	width: 760px;
+	height: 450px;
+	float: left;
+}
+
+#option_bar{
+	background-color: black;
+	width: 756px;
+	height: 26px;
+	border-style: solid;
+	border-color: white;
+	border-width: 2px;
+}
+
+.option{
+	float: left;
+	width: 60px;
+	text-align: center;
+}
+
+.option_link{
+	color: white;
+}
+
+#struct_area{
+	background-color: white;
+	width: 400px;
+	height: 420px;
+}
+
+.line{
+	background-color: rgba(0,0,255,0.5);
+	height: 46px;
+	width: 396px;
+	border-style: solid;
+	border-color: white;
+	border-width: 2px;
+}
+
+.line_number{
+	float: left;
+	height: 100%;
+	width: 46px;
+	text-align: center;
+	line-height:46px;
+}
+
+.line_struct{
+	line-height: 46px;
+	float: left;
 }
 
 #tool_bar{
@@ -10,7 +65,7 @@
 	float: right;
 	background-color: rgba(0,0,0,0.2);
 
-	visibility: hidden;
+	display: none;
 }
 
 #tool_bar_header{
@@ -21,6 +76,18 @@
 #tool_bar_item{
 	width: 240px;
 	height: 410px;
+}
+
+#tool_bar_new{
+	display: block;
+}
+
+#tool_bar_assign{
+	display: none;
+}
+
+#tool_bar_other{
+	display: none;
 }
 
 .tool_bar_button{
@@ -36,7 +103,7 @@
 }
 
 .in_toolbar_text{
-
+	user-select: none;
 	float: center;
 	text-align: center;
 }
@@ -59,6 +126,7 @@
 	border-style:groove;
 	border-width:5px;
 	font-family:"Arial Black";
+	font-size: 14px;
 	float:right;
 	text-align: center;
 }
@@ -68,4 +136,11 @@
 	height:60px;
 	float:right;
 	text-align: center;
+}
+
+.tool_link{
+	color:#0000ff;
+}
+.tool_link:hover{
+	color:#ff0000;
 }
