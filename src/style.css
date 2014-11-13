@@ -27,6 +27,10 @@
 	text-align: center;
 }
 
+.option:hover{
+	cursor: pointer;
+}
+
 .option_link{
 	color: white;
 }
@@ -39,6 +43,15 @@
 
 .line{
 	background-color: rgba(0,0,255,0.5);
+	height: 46px;
+	width: 396px;
+	border-style: solid;
+	border-color: white;
+	border-width: 2px;
+}
+
+.line_selected{
+	background-color: rgba(255,0,0,0.5);
 	height: 46px;
 	width: 396px;
 	border-style: solid;
@@ -102,6 +115,10 @@
 	font-size:20px;
 }
 
+.tool_bar_button:hover{
+	cursor: pointer;
+}
+
 .in_toolbar_text{
 	user-select: none;
 	float: center;
@@ -129,6 +146,10 @@
 	font-size: 14px;
 	float:right;
 	text-align: center;
+}
+
+.tool_box:hover{
+	cursor: pointer;
 }
 
 .tool_text{

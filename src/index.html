@@ -11,29 +11,31 @@
 			<div id="coding_area">
 
 				<div id="option_bar">
-					<div id="testA" class="option">
-						<a href="#" class="option_link">testA</a>
+					<div id="opt_toolbar" class="option" onclick="tool_bar_visible()">
+						<a class="option_link">ToolBar</a>
 					</div>
 					<div id="testB" class="option">
-						<a href="#" class="option_link">testB</a>
+						<a  class="option_link">testB</a>
 					</div>
 				</div>
 
 				<div id="struct_area">
+					<!--
 					<div id="test_line" class="line">
 						<div class="line_number">1</div>
 						<div id="test_struct_line" class="line_struct">
 							aaa
 						</div>
 					</div>
+					//-->
 				</div>
 			</div>
 
 			<div id="tool_bar" style="display:block">
 				<div id="tool_bar_header">
-					<a href="#new" class="tool_link" onclick="tool_bar_switch('new')"><div class="tool_bar_button">New</div></a>
-					<a href="#assign" class="tool_link" onclick="tool_bar_switch('assign')"><div class="tool_bar_button">Assign</div></a>
-					<a href="#other" class="tool_link" onclick="tool_bar_switch('other')"><div class="tool_bar_button">Other</div></a>
+					<a class="tool_link" onclick="tool_bar_switch('new')"><div class="tool_bar_button">New</div></a>
+					<a class="tool_link" onclick="tool_bar_switch('assign')"><div class="tool_bar_button">Assign</div></a>
+					<a class="tool_link" onclick="tool_bar_switch('other')"><div class="tool_bar_button">Other</div></a>
 				</div>
 
 				<div id="tool_bar_item">
@@ -42,7 +44,7 @@
 
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
-								<a href="#" class="tool_link">
+								<a class="tool_link">
 								<div class="tool_box">
 									New</br>
 									Var
@@ -59,7 +61,7 @@
 						<div id="new_func" class="tool_area">
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
-								<a href="#" class="tool_link">
+								<a class="tool_link">
 								<div class="tool_box">
 									New</br>
 									Func
@@ -78,7 +80,7 @@
 						<div id="assign_num" class="tool_area">
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
-								<a href="#" class="tool_link">
+								<a class="tool_link">
 								<div class="tool_box">
 									Fixed</br>
 									Num
@@ -95,7 +97,7 @@
 						<div id="assign_str" class="tool_area">
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
-								<a href="#" class="tool_link">
+								<a class="tool_link">
 								<div class="tool_box">
 									String</br>
 									Text
@@ -118,7 +120,13 @@
 			</div>
 		</div>
 
-		<button onclick="tool_bar_visible()">Tool Bar</button>
-		<button onclick="add_new_line()">Add New Line</button>
+		<form name="f">
+			<input type="text" name="new_var" onKeyPress="return submitStop(event)">
+			<input type="button" name="new_var_button" onclick="add_test_line()" value="New Var">
+			</br>
+			<input type="text" name="assign_value" onKeyPress="return submitStop(event)">
+			<select id="selector"></select>
+			<input type="button" name="assign" onclick="test_assign()" value="Assign">
+		</form>
 	</body>
 </html>
