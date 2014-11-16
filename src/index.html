@@ -1,5 +1,6 @@
-<html>
+<!DOCTYPE html>
 	<head>
+		<meta charset="UTF-8">
 		<title>卒論用page</title>
 		<script type="text/javascript" src="code.js"></script>
 		<link href="style.css" rel="stylesheet" type="text/css">
@@ -45,15 +46,21 @@
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
 								<a class="tool_link">
-								<div class="tool_box">
+								<div class="tool_box" onclick="tb_new_var()">
 									New</br>
 									Var
 								</div>
 								</a>
 							</div>
+
 							<div class="tool_text">
 								Declare New</br>
 								Variable
+							</div>
+
+							<div class="tool_input">
+								Variable Name</br>
+								<input type="text" size="20" id="new_var_input" onKeyPress="return tb_make_new_var(event)">
 							</div>
 							<div class="tool_blank"></div>
 						</div>
@@ -125,7 +132,15 @@
 			<input type="button" name="new_var_button" onclick="add_test_line()" value="New Var">
 			</br>
 			<input type="text" name="assign_value" onKeyPress="return submitStop(event)">
+			<select id="opr">
+				<option value="">--</option>
+				<option value="+">+</option>
+				<option value="-">-</option>
+				<option value="*">*</option>
+				<option value="/">/</option>
+			</select>
 			<select id="selector"></select>
+			<input type="button" name="addEx" onclick="add_expression()" value="Add Expression">
 			<input type="button" name="assign" onclick="test_assign()" value="Assign">
 		</form>
 	</body>

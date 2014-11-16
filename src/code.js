@@ -7,6 +7,7 @@ var variables;
 
 var line = function(_number,_kind,_name,_value){
 	this.number = _number;
+	this.name = _name;
 	this.kind = _kind;
 	if(_kind=="Var"){
 		this.var_value = new variable(_name);
@@ -81,12 +82,15 @@ var add_new_line = function(kind,name,value){
 			if(kind=="Var"){
 				lines[l] = new line(l,kind,name,null);
 				add_new_lineView(lines[l].number,"NEW_VARIABLE",name);
+				document.f.new_var.value= "";
+				add_all_lineView();
 			}
 			console.log(lines);
 		}else{
 			if(kind=="Assign"){
 				lines[l] = new line(l,kind,name,value);
 				add_new_lineView(lines[l].number,"ASSIGN_VARIABLE",name);
+				add_all_lineView();
 			}else{
 				console.log(name+" is already exist...");
 			}
@@ -106,6 +110,14 @@ var test_assign = function(){
 var assign = function(name,value){
 	console.log(name + " = " + value + ";");
 	add_new_line("Assign",name,value);
+}
+
+var add_expression = function(){
+	var v = document.f.assign_value;
+	var opr = document.getElementById("opr").value;
+	var n = document.getElementById("selector").value;
+	v.value += opr + n;
+	console.log(v.value);
 }
 
 var init = function(){
@@ -151,6 +163,21 @@ var tool_bar_switch = function(name){
 	tool_bar_opened = name;
 }
 
+var add_all_lineView = function(){
+	var structArea = document.getElementById("struct_area");
+	var children = structArea.childNodes;
+	while(structArea.firstChild){
+		structArea.removeChild(structArea.firstChild);
+	}
+	for(var prop in lines){
+		if(lines[prop].kind=="Var"){
+			add_new_lineView(lines[prop].number,"NEW_VARIABLE",lines[prop].name);
+		}else if(lines[prop].kind=="Assign"){
+			add_new_lineView(lines[prop].number,"ASSIGN_VARIABLE",lines[prop].name);
+		}
+	}
+}
+
 var add_new_lineView = function(number,value,name){
 	var struct = document.getElementById("struct_area");
 	var line = document.createElement("div");
@@ -163,12 +190,12 @@ var add_new_lineView = function(number,value,name){
 	lineStruct.className = "line_struct";
 	if(value=="NEW_VARIABLE"){
 		value = " : new variable";
-		add_selector(name);	//test code;
+		all_add_selector(name);	//test code;
 	}else if(value=="ASSIGN_VARIABLE"){
 		console.log(lines[number]);
 		value = " = " + lines[number].assign_value;
 	}
-	
+
 	value = name + value;
 	lineStruct.innerHTML = value;
 	line.appendChild(lineStruct);
@@ -178,12 +205,30 @@ var add_new_lineView = function(number,value,name){
 	line.addEventListener("click", function(){select_line(number,name,line)},false);
 }
 
+var all_add_selector = function(){
+	//	セレクターを全削除してからvariablesの中身を追加
+	var selector = document.getElementById("selector");
+	while(selector.firstChild){
+		selector.removeChild(selector.firstChild);
+	}
+	for(var prop in variables){
+		var new_option = document.createElement("option");
+		new_option.innerHTML = variables[prop].name;
+		new_option.setAttribute("value",variables[prop].name);
+		selector.appendChild(new_option);
+	}
+}
+
 var add_selector = function(name){
 	var selector = document.getElementById("selector");
+	add_option(selector,name);
+}
+
+var add_option = function(node,option){
 	var new_option = document.createElement("option");
-	new_option.innerHTML = name;
-	new_option.setAttribute("value",name);
-	selector.appendChild(new_option);
+	new_option.innerHTML = option;
+	new_option.setAttribute("value",option);
+	node.appendChild(new_option);
 }
 
 var add_test_line = function(){
@@ -198,11 +243,46 @@ var select_line = function(number,name,line_area){
 		selected_line_num = -1;
 		line_area.className = "line";
 	}else{
-		console.log(number + " is selected.");
-		var el = document.querySelector(".line_selected");
-		if(el!=null)el.className = "line";
-		selected_line_num = number;
-		line_area.className = "line_selected";
+		if(selected_line_num==-1){
+			//	ラインが選択されていない状態
+			console.log(number + " is selected.");
+			var el = document.querySelector(".line_selected");
+			if(el!=null)el.className = "line";
+			selected_line_num = number;
+			line_area.className = "line_selected";
+		}else{
+			//	ほかのラインが選択されている状態（入れ替え）
+			line_change(number,selected_line_num);
+			selected_line_num = -1;
+		}
+	}
+}
+
+var line_change = function(n,n0){
+	console.log(lines[n]);
+	console.log(lines[n0]);
+	var tmp = lines[n];
+	lines[n] = lines[n0];
+	lines[n].number = n;
+	lines[n0] = tmp;
+	lines[n0].number = n0;
+
+
+	add_all_lineView();
+}
+
+var tb_new_var = function(){
+	var nv = document.getElementById("new_var");
+	var txt = nv.querySelector(".tool_text");
+	var ipt = nv.querySelector(".tool_input");
+
+	if(txt.style.display=="none"){
+		txt.style.display = "block";
+		ipt.style.display = "none";
+	}else {
+		ipt.querySelector("input").value = "";
+		txt.style.display = "none";
+		ipt.style.display = "block";
 	}
 }
 
@@ -212,6 +292,16 @@ var submitStop = function(e){
 	}
 	if(e.keyCode==13){
 		return false;
+	}
+}
+
+var tb_make_new_var = function(e){
+	if(!e)
+		var e = window.event;
+	if(e.keyCode==13){
+		var tbNewVar = document.getElementById("new_var");
+		add_new_line('Var',tbNewVar.querySelector("input").value,null);
+		tb_new_var();
 	}
 }
 
