@@ -207,7 +207,7 @@ var add_new_lineView = function(number,value,name){
 
 var all_add_selector = function(){
 	//	セレクターを全削除してからvariablesの中身を追加
-	var selector = document.getElementById("selector");
+	var selector = document.getElementById("assign_var_selector");
 	while(selector.firstChild){
 		selector.removeChild(selector.firstChild);
 	}
@@ -220,7 +220,7 @@ var all_add_selector = function(){
 }
 
 var add_selector = function(name){
-	var selector = document.getElementById("selector");
+	var selector = document.getElementById("assign_var_selector");
 	add_option(selector,name);
 }
 
@@ -284,6 +284,28 @@ var tb_new_var = function(){
 		txt.style.display = "none";
 		ipt.style.display = "block";
 	}
+}
+
+var tb_new_assign = function(){
+	var hoge = document.getElementById("assign_new_var");
+	var txt = hoge.querySelector(".tool_text");
+	var selector = hoge.querySelector(".assign_selector");
+
+	if(txt.style.display=="none"){
+		txt.style.display = "block";
+		selector.style.display = "none";
+	}else {
+		txt.style.display = "none";
+		selector.style.display = "block";
+	}
+}
+
+var make_new_assign_line = function(){
+	var div = document.getElementById("assign_new_var");
+	var selector = div.querySelector("select");
+	var left_var = selector.value;
+
+	add_new_line("Assign",left_var,null);
 }
 
 var submitStop = function(e){

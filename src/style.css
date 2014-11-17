@@ -169,6 +169,20 @@
 	display: none;
 }
 
+.assign_selector{
+	width:130px;
+	height:60px;
+	float:right;
+	text-align: center;
+	font-size: 16px;
+	display: none;
+}
+
+#assign_var_selector{
+	font-size: 14px;
+	width: 120px;
+}
+
 .tool_link{
 	color:#0000ff;
 }
