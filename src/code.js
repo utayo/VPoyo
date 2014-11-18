@@ -16,15 +16,16 @@ var line = function(_number,_kind,_name,_value){
 		if(_value){
 			this.var_value = variables[_name];
 			this.assign_value = _value;
-			this.struct = new struct(_value);
+			if(_value!="BEFORE_ASSIGN")
+				this.struct = new struct(_value);
 		}else{
 			console.log("please insert assign value...");
 		}
 	}
 }
 
-
 var struct = function(value){
+	//	文字列を演算子で分割し、各要素に分けて保存する
 	var contents = [];
 	var str0 = [];
 	var str = value.split("+");
@@ -89,7 +90,11 @@ var add_new_line = function(kind,name,value){
 		}else{
 			if(kind=="Assign"){
 				lines[l] = new line(l,kind,name,value);
-				add_new_lineView(lines[l].number,"ASSIGN_VARIABLE",name);
+				if(value!="BEFORE_ASSIGN"){
+					add_new_lineView(lines[l].number,"ASSIGN_VARIABLE",name);
+				}else{
+					add_new_lineView(lines[l].number,"BEFORE_ASSIGN",name);
+				}
 				add_all_lineView();
 			}else{
 				console.log(name+" is already exist...");
@@ -173,6 +178,7 @@ var add_all_lineView = function(){
 		if(lines[prop].kind=="Var"){
 			add_new_lineView(lines[prop].number,"NEW_VARIABLE",lines[prop].name);
 		}else if(lines[prop].kind=="Assign"){
+			console.log(lines[prop.value]);
 			add_new_lineView(lines[prop].number,"ASSIGN_VARIABLE",lines[prop].name);
 		}
 	}
@@ -188,16 +194,21 @@ var add_new_lineView = function(number,value,name){
 	line.appendChild(lineNum);
 	var lineStruct = document.createElement("div");
 	lineStruct.className = "line_struct";
+
+	var str;
+
 	if(value=="NEW_VARIABLE"){
-		value = " : new variable";
+		str = " : new variable";
 		all_add_selector(name);	//test code;
+	}else if(lines[number].assign_value=="BEFORE_ASSIGN"){
+		str = " = Empty!";
+		console.log(str);
 	}else if(value=="ASSIGN_VARIABLE"){
-		console.log(lines[number]);
-		value = " = " + lines[number].assign_value;
+		str = " = " + lines[number].assign_value;
 	}
 
-	value = name + value;
-	lineStruct.innerHTML = value;
+	str = name + str;
+	lineStruct.innerHTML = str;
 	line.appendChild(lineStruct);
 
 	struct.appendChild(line);
@@ -242,6 +253,7 @@ var select_line = function(number,name,line_area){
 		console.log(number + " is deselected.");
 		selected_line_num = -1;
 		line_area.className = "line";
+		tool_bar_switch('new');
 	}else{
 		if(selected_line_num==-1){
 			//	ラインが選択されていない状態
@@ -250,10 +262,12 @@ var select_line = function(number,name,line_area){
 			if(el!=null)el.className = "line";
 			selected_line_num = number;
 			line_area.className = "line_selected";
+			tool_bar_switch('assign');
 		}else{
 			//	ほかのラインが選択されている状態（入れ替え）
 			line_change(number,selected_line_num);
 			selected_line_num = -1;
+			tool_bar_switch('new');
 		}
 	}
 }
@@ -304,8 +318,10 @@ var make_new_assign_line = function(){
 	var div = document.getElementById("assign_new_var");
 	var selector = div.querySelector("select");
 	var left_var = selector.value;
-
-	add_new_line("Assign",left_var,null);
+	if(left_var!="NO_VARIABLES"){
+		add_new_line("Assign",left_var,"BEFORE_ASSIGN");
+		tb_new_assign();
+	}
 }
 
 var submitStop = function(e){
@@ -326,6 +342,7 @@ var tb_make_new_var = function(e){
 		tb_new_var();
 	}
 }
+
 
 
 init();
