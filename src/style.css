@@ -10,6 +10,8 @@
 	width: 760px;
 	height: 450px;
 	float: left;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 #option_bar{
@@ -33,6 +35,8 @@
 
 .option_link{
 	color: white;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 #struct_area{
@@ -48,6 +52,8 @@
 	border-style: solid;
 	border-color: white;
 	border-width: 2px;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 .line_selected{
@@ -57,6 +63,8 @@
 	border-style: solid;
 	border-color: white;
 	border-width: 2px;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 .line_number{
@@ -65,11 +73,15 @@
 	width: 46px;
 	text-align: center;
 	line-height:46px;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 .line_struct{
 	line-height: 46px;
 	float: left;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 #tool_bar{
@@ -84,11 +96,47 @@
 #tool_bar_header{
 	width: 240px;
 	height: 40px;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 #tool_bar_item{
 	width: 240px;
-	height: 410px;
+	height: 360px;
+}
+
+#tool_bar_delete{
+	width: 240px;
+	height: 50px;
+}
+
+#delete_button{
+	margin: 0 auto;
+	font-size: 24px;
+	text-align: center;
+	width: 200px;
+	height: 40px;
+	border-radius: 8px;
+}
+
+.stop{
+	color: black;
+	background-color: gray;
+	border: 2px solid black;
+	cursor: default;
+}
+
+.active{
+	color: black;
+	background-color: red;
+	border: 2px solid black;
+	cursor: pointer;
+}
+
+.active:hover{
+	color: white;
+	border: 2px solid white;
+	cursor: pointer;
 }
 
 #tool_bar_new{
@@ -146,6 +194,8 @@
 	font-size: 14px;
 	float:right;
 	text-align: center;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 .tool_box:hover{
@@ -158,6 +208,9 @@
 	float:right;
 	text-align: center;
 	display: block;
+	user-select: none;
+	-moz-user-select: none;
+	cursor: default;
 }
 
 .tool_input{

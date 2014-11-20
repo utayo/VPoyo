@@ -1,7 +1,7 @@
 	<!DOCTYPE html>
 	<head>
 		<meta charset="UTF-8">
-		<title>卒論用page</title>
+		<title>Visual-Poyogramming</title>
 		<script type="text/javascript" src="code.js"></script>
 		<link href="style.css" rel="stylesheet" type="text/css">
 	</head>
@@ -15,9 +15,11 @@
 					<div id="opt_toolbar" class="option" onclick="tool_bar_visible()">
 						<a class="option_link">ToolBar</a>
 					</div>
+					<!--
 					<div id="testB" class="option">
 						<a  class="option_link">testB</a>
 					</div>
+					//-->
 				</div>
 
 				<div id="struct_area">
@@ -59,8 +61,8 @@
 							</div>
 
 							<div class="tool_input">
-								Variable Name</br>
 								<input type="text" size="20" id="new_var_input" onKeyPress="return tb_make_new_var(event)">
+								<input type="button" value="Make New Var" onclick="new_var_hoge()">
 							</div>
 							<div class="tool_blank"></div>
 						</div>
@@ -113,7 +115,7 @@
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
 								<a class="tool_link">
-								<div class="tool_box">
+								<div class="tool_box" onclick="tb_fixed_num()">
 									Fixed</br>
 									Num
 								</div>
@@ -122,6 +124,10 @@
 							<div class="tool_text">
 								Assign</br>
 								a Fixed Number
+							</div>
+							<div class="tool_input">
+								<input type="text" size="20" id="fixed_num_input" onKeyPress="return tb_assign_fixed_num(event)">
+								<input type="button" value="Assign Number" onclick="assign_fixed_hoge()">
 							</div>
 							<div class="tool_blank"></div>
 						</div>
@@ -149,9 +155,15 @@
 					</div>
 
 				</div>
+				<div id="tool_bar_delete">
+					<div id="delete_button" class="stop" onclick="delete_line()">
+						Delete
+					</div>
+				</div>
 			</div>
 		</div>
 
+		<!--
 		<form name="f">
 			<input type="text" name="new_var" onKeyPress="return submitStop(event)">
 			<input type="button" name="new_var_button" onclick="add_test_line()" value="New Var">
@@ -168,5 +180,6 @@
 			<input type="button" name="addEx" onclick="add_expression()" value="Add Expression">
 			<input type="button" name="assign" onclick="test_assign()" value="Assign">
 		</form>
+		//-->
 	</body>
 </html>

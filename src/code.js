@@ -28,7 +28,8 @@ var struct = function(value){
 	//	文字列を演算子で分割し、各要素に分けて保存する
 	var contents = [];
 	var str0 = [];
-	var str = value.split("+");
+	var str = String(value);
+	str = str.split("+");
 	for(var prop in str){
 		if(prop!=0)
 			contents[contents.length] = new operator("+");
@@ -74,6 +75,7 @@ var operator = function(kind){
 var variable = function(_name){
 	this.name = _name;
 	this.value = null;
+	this.type = undefined;
 }
 
 var add_new_line = function(kind,name,value){
@@ -97,12 +99,15 @@ var add_new_line = function(kind,name,value){
 				}
 				add_all_lineView();
 			}else{
+				window.alert(name + " is already exist...");
 				console.log(name+" is already exist...");
 			}
 		}
 	}else{
-		console.log("please insert variable name...")
+		window.alert("Please insert variable name...");
+		console.log("please insert variable name...");
 	}
+	selected_line_num = -1;
 }
 
 var test_assign = function(){
@@ -202,7 +207,6 @@ var add_new_lineView = function(number,value,name){
 		all_add_selector(name);	//test code;
 	}else if(lines[number].assign_value=="BEFORE_ASSIGN"){
 		str = " = Empty!";
-		console.log(str);
 	}else if(value=="ASSIGN_VARIABLE"){
 		str = " = " + lines[number].assign_value;
 	}
@@ -254,6 +258,7 @@ var select_line = function(number,name,line_area){
 		selected_line_num = -1;
 		line_area.className = "line";
 		tool_bar_switch('new');
+		delete_button_change('stop');
 	}else{
 		if(selected_line_num==-1){
 			//	ラインが選択されていない状態
@@ -263,11 +268,13 @@ var select_line = function(number,name,line_area){
 			selected_line_num = number;
 			line_area.className = "line_selected";
 			tool_bar_switch('assign');
+			delete_button_change('active');
 		}else{
 			//	ほかのラインが選択されている状態（入れ替え）
 			line_change(number,selected_line_num);
 			selected_line_num = -1;
 			tool_bar_switch('new');
+			delete_button_change('stop');
 		}
 	}
 }
@@ -314,6 +321,20 @@ var tb_new_assign = function(){
 	}
 }
 
+var tb_fixed_num = function(){
+	var hoge = document.getElementById("assign_num");
+	var txt = hoge.querySelector(".tool_text");
+	var input = hoge.querySelector(".tool_input");
+
+	if(txt.style.display=="none"){
+		txt.style.display = "block";
+		input.style.display = "none";
+	}else {
+		txt.style.display = "none";
+		input.style.display = "block";
+	}
+}
+
 var make_new_assign_line = function(){
 	var div = document.getElementById("assign_new_var");
 	var selector = div.querySelector("select");
@@ -321,6 +342,28 @@ var make_new_assign_line = function(){
 	if(left_var!="NO_VARIABLES"){
 		add_new_line("Assign",left_var,"BEFORE_ASSIGN");
 		tb_new_assign();
+	}
+}
+
+var remake_assign_line = function(value){
+	var l = selected_line_num;
+	if(l!=-1){
+		if(lines[l].kind=="Var"){
+			var name = lines[l].name;
+			add_new_line("Assign",name,"BEOFRE_ASSIGN");
+			tb_new_assign();
+			l = lines.length-1;
+		}	
+		var selected_line = lines[l];
+		console.log(selected_line);
+		lines[l].struct = new struct(value);
+		lines[l].assign_value = value;
+		lines[l].var_value.type = "Number";
+		selected_line_num = -1;
+		delete_button_change('stop');
+		add_all_lineView();
+	}else{
+		window.alert("Please Select Line...");
 	}
 }
 
@@ -337,12 +380,79 @@ var tb_make_new_var = function(e){
 	if(!e)
 		var e = window.event;
 	if(e.keyCode==13){
-		var tbNewVar = document.getElementById("new_var");
-		add_new_line('Var',tbNewVar.querySelector("input").value,null);
-		tb_new_var();
+		new_var_hoge();
 	}
 }
 
+var new_var_hoge = function(){
+	var tbNewVar = document.getElementById("new_var");
+	add_new_line('Var',tbNewVar.querySelector("input").value,null);
+	tb_new_var();
+	add_all_lineView();
+}
+
+var tb_assign_fixed_num = function(e){
+	if(!e)
+		var e = window.event;
+	if(e.keyCode==13){
+		assign_fixed_hoge();
+	}
+}
+
+var assign_fixed_hoge = function(){
+	var div = document.getElementById("assign_num");
+		var num = div.querySelector('input').value;
+		if(isNaN(num)){
+			window.alert(num+" is not Number...");
+		}else{
+			num = parseFloat(num);
+			remake_assign_line(num);
+			div.querySelector('input').value = "";
+		}
+}
+
+var delete_button_change = function(hoge){
+	var dButton = document.getElementById("delete_button");
+	dButton.className = hoge;
+}
+
+var delete_line = function(){
+	if(document.getElementById("delete_button").className=='active'){
+		var l = selected_line_num;
+		lines.splice(l);
+		selected_line_num = -1;
+		add_all_lineView();
+		document.getElementById("delete_button").className = 'stop';
+	}
+}
+
+
+
+var make_code = function(){
+	console.log(lines);
+	var code = "";
+	for(var prop in lines){
+		var l = lines[prop];
+		if(l.kind=="Var"){
+			code += "var " + l.name + ";</br>";
+		}else if(l.kind=="Assign"){
+			code += l.name + "=" + l.assign_value + ";</br>";
+		}
+	}
+
+	window.alert(code);
+
+	var storage = sessionStorage;
+	storage.setItem('code',code);
+
+	var x = window.open("script.html","");
+}
+
+var put_code = function(){
+	var storage = sessionStorage;
+	var code = storage.getItem('code');
+	document.getElementById("code_area").innerHTML = code;
+}
 
 
 init();
