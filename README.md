@@ -1,7 +1,7 @@
 VPoyo
 =====
 
-hhlab  
+hhlab
 Takumi Utashiro
 
 動作環境：FireFox33.1にて確認
