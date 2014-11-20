@@ -20,6 +20,7 @@ var line = function(_number,_kind,_name,_value){
 				this.struct = new struct(_value);
 		}else{
 			console.log("please insert assign value...");
+			window.alert("please insert assign value...");
 		}
 	}
 }
@@ -439,9 +440,6 @@ var make_code = function(){
 			code += l.name + "=" + l.assign_value + ";</br>";
 		}
 	}
-
-	window.alert(code);
-
 	var storage = sessionStorage;
 	storage.setItem('code',code);
 
