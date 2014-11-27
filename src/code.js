@@ -336,6 +336,20 @@ var tb_fixed_num = function(){
 	}
 }
 
+var tb_fixed_str = function(){
+	var hoge = document.getElementById("assign_str");
+	var txt = hoge.querySelector(".tool_text");
+	var input = hoge.querySelector(".tool_input");
+
+	if(txt.style.display=="none"){
+		txt.style.display = "block";
+		input.style.display = "none";
+	}else {
+		txt.style.display = "none";
+		input.style.display = "block";
+	}
+}
+
 var make_new_assign_line = function(){
 	var div = document.getElementById("assign_new_var");
 	var selector = div.querySelector("select");

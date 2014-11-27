@@ -136,7 +136,7 @@
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
 								<a class="tool_link">
-								<div class="tool_box">
+								<div class="tool_box" onclick="tb_fixed_str()">
 									String</br>
 									Text
 								</div>
@@ -144,7 +144,11 @@
 							</div>
 							<div class="tool_text">
 								Assign</br>
-								a Fixed Number
+								a String
+							</div>
+							<div class="tool_input">
+								<input type="text" size="20" id="fixed_num_input" onKeyPress="return tb_assign_fixed_string(event)">
+								<input type="button" value="Assign Number" onclick="assign_fixed_string_hoge()">
 							</div>
 							<div class="tool_blank"></div>
 						</div>
