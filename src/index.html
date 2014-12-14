@@ -67,7 +67,45 @@
 							<div class="tool_blank"></div>
 						</div>
 
-						<div id="assign_new_var" class="tool_area">
+						<div id="new_if" class="tool_area">
+							<div class="tool_blank"></div>
+							<div class="tool_box_area">
+								<a class="tool_link">
+								<div class="tool_box" onclick="tb_new_if()">
+									New</br>
+									If
+								</div>
+								</a>
+							</div>
+							<div class="tool_text">
+								Add New</br>
+								If Block
+							</div>
+							<div class="tool_input">
+								<input type="button" value="Make New If-Block" id="if_button" onclick="make_new_if()">
+							</div>
+							<div class="tool_blank"></div>
+						</div>
+
+						<div id="new_func" class="tool_area">
+							<div class="tool_blank"></div>
+							<div class="tool_box_area">
+								<a class="tool_link">
+								<div class="tool_box">
+									New</br>
+									Func
+								</div>
+								</a>
+							</div>
+							<div class="tool_text">
+								Declare New</br>
+								Function
+							</div>
+							<div class="tool_blank"></div>
+						</div>
+					</div>
+
+					<div id="assign_new_var" class="tool_area">
 							<div class="tool_blank"></div>
 							<div class="tool_box_area">
 								<a class="tool_link">
@@ -90,24 +128,6 @@
 							</div>
 							<div class="tool_blank"></div>
 						</div>
-
-						<div id="new_func" class="tool_area">
-							<div class="tool_blank"></div>
-							<div class="tool_box_area">
-								<a class="tool_link">
-								<div class="tool_box">
-									New</br>
-									Func
-								</div>
-								</a>
-							</div>
-							<div class="tool_text">
-								Declare New</br>
-								Function
-							</div>
-							<div class="tool_blank"></div>
-						</div>
-					</div>
 
 					<div id="tool_bar_assign">
 
@@ -148,7 +168,7 @@
 							</div>
 							<div class="tool_input">
 								<input type="text" size="20" id="fixed_num_input" onKeyPress="return tb_assign_fixed_string(event)">
-								<input type="button" value="Assign Number" onclick="assign_fixed_string_hoge()">
+								<input type="button" value="Assign Number" onclick="assign_fixed_string()">
 							</div>
 							<div class="tool_blank"></div>
 						</div>

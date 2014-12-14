@@ -1,27 +1,33 @@
 var project;
 var tool_bar_opened = "new";
 var selected_line_num;
+var add_div;
 
 var lines = [];
 var variables;
 
 var line = function(_number,_kind,_name,_value){
 	this.number = _number;
-	this.name = _name;
 	this.kind = _kind;
 	if(_kind=="Var"){
+		this.name = _name;
 		this.var_value = new variable(_name);
 		variables[_name] = this.var_value;
 	}else if(_kind=="Assign"){
+		this.name = _name;
 		if(_value){
 			this.var_value = variables[_name];
 			this.assign_value = _value;
+			this.type = null;
 			if(_value!="BEFORE_ASSIGN")
 				this.struct = new struct(_value);
 		}else{
 			console.log("please insert assign value...");
 			window.alert("please insert assign value...");
 		}
+	}else if(_kind=="If"){
+		this.condition = [];
+		this.inner_lines = [];
 	}
 }
 
@@ -76,37 +82,49 @@ var operator = function(kind){
 var variable = function(_name){
 	this.name = _name;
 	this.value = null;
-	this.type = undefined;
+	//this.type = undefined;
 }
 
 var add_new_line = function(kind,name,value){
+	var l = lines.length;
 	if(name){
-		var l = lines.length;
 		if(variables[name]===undefined){
 			if(kind=="Var"){
-				lines[l] = new line(l,kind,name,null);
-				add_new_lineView(lines[l].number,"NEW_VARIABLE",name);
-				document.f.new_var.value= "";
-				add_all_lineView();
+				if(document.querySelector(".box_selected")){
+					var ls = lines[selected_line_num].inner_lines;
+					console.log(ls.length);
+					ls[ls.length] = new line(ls.length,kind,name,null);
+					//add_new_lineView(ls[ls.length-1].number,"NEW_VARIABLE",name);
+				}else{
+					lines[l] = new line(l,kind,name,null);
+					//add_new_lineView(lines[l].number,"NEW_VARIABLE",name);
+				}
+				document.getElementById("new_var_input").value= "";
+				add_all_lineView(add_div,lines);
 			}
 			console.log(lines);
 		}else{
 			if(kind=="Assign"){
-				lines[l] = new line(l,kind,name,value);
-				if(value!="BEFORE_ASSIGN"){
-					add_new_lineView(lines[l].number,"ASSIGN_VARIABLE",name);
-				}else{
-					add_new_lineView(lines[l].number,"BEFORE_ASSIGN",name);
-				}
-				add_all_lineView();
+				if(document.querySelector(".box_selected")){
+					var ls = lines[selected_line_num].inner_lines;
+					ls[ls.length] = new line(ls.length,kind,name,value);
+				}else
+					lines[l] = new line(l,kind,name,value);
+				add_all_lineView(add_div,lines);
 			}else{
 				window.alert(name + " is already exist...");
 				console.log(name+" is already exist...");
 			}
 		}
 	}else{
-		window.alert("Please insert variable name...");
-		console.log("please insert variable name...");
+		if(kind=="If"){
+			lines[l] = new line(l,kind,null,null);
+			lines[l].inner_lines[0] = new line(0,"Start");
+			add_all_lineView(add_div,lines);
+		}else{
+			window.alert("Please insert variable name...");
+			console.log("please insert variable name...");
+		}
 	}
 	selected_line_num = -1;
 }
@@ -129,16 +147,6 @@ var add_expression = function(){
 	var n = document.getElementById("selector").value;
 	v.value += opr + n;
 	console.log(v.value);
-}
-
-var init = function(){
-	project = document.getElementById("project");
-	var t = document.getElementById("tb");
-	lines[0] = new line(0,"Start");
-	selected_line_num = -1;
-	variables = new Object();
-
-	console.log("success");
 }
 
 var tbn = function(name){
@@ -174,24 +182,47 @@ var tool_bar_switch = function(name){
 	tool_bar_opened = name;
 }
 
-var add_all_lineView = function(){
-	var structArea = document.getElementById("struct_area");
+var add_all_lineView = function(area,list){
+	//var structArea = document.getElementById("struct_area");
+	console.log(list);
+	if(area.className=="if")
+		area = area.parentNode;
+	console.log(area);
+	var structArea = area;
 	var children = structArea.childNodes;
-	while(structArea.firstChild){
-		structArea.removeChild(structArea.firstChild);
+	
+	if(area.id=="struct_area"){
+		while(structArea.firstChild){
+			structArea.removeChild(structArea.firstChild);
+		}
 	}
-	for(var prop in lines){
-		if(lines[prop].kind=="Var"){
-			add_new_lineView(lines[prop].number,"NEW_VARIABLE",lines[prop].name);
-		}else if(lines[prop].kind=="Assign"){
-			console.log(lines[prop.value]);
-			add_new_lineView(lines[prop].number,"ASSIGN_VARIABLE",lines[prop].name);
+
+	for(var prop in list){
+		if(list[prop].kind=="Var"){
+			console.log("::"+list[prop].name);
+			add_new_lineView(list[prop].number,"NEW_VARIABLE",list[prop].name,area);
+		}else if(list[prop].kind=="Assign"){
+			console.log(list[prop.value]);
+			add_new_lineView(list[prop].number,"ASSIGN_VARIABLE",lines[prop].name,area);
+		}else if(list[prop].kind=="If"){
+			add_new_ifView(list[prop].number);
+			var iflist = area.querySelectorAll('.if');
+			var hoge = iflist[iflist.length-1];
+			console.log(hoge);
+			add_all_lineView(hoge,list[prop].inner_lines);
 		}
 	}
 }
 
-var add_new_lineView = function(number,value,name){
-	var struct = document.getElementById("struct_area");
+var add_new_lineView = function(number,value,name,area){
+	var struct = area;
+	/*
+	if(document.querySelector(".box_selected")){
+		struct = document.querySelector(".box_selected");
+	}else{
+		struct = document.querySelector("#struct_area");
+	}*/
+	console.log(name);
 	var line = document.createElement("div");
 	line.className = "line";
 	var lineNum = document.createElement("div");
@@ -203,13 +234,17 @@ var add_new_lineView = function(number,value,name){
 
 	var str;
 
+
 	if(value=="NEW_VARIABLE"){
 		str = " : new variable";
 		all_add_selector(name);	//test code;
 	}else if(lines[number].assign_value=="BEFORE_ASSIGN"){
 		str = " = Empty!";
 	}else if(value=="ASSIGN_VARIABLE"){
-		str = " = " + lines[number].assign_value;
+		if(lines[number].type=="String")
+			str = " = \"" + lines[number].assign_value + "\" : Assign Fixed String";
+		else 
+			str = " = " + lines[number].assign_value + " : Assign Fixed Number";
 	}
 
 	str = name + str;
@@ -217,6 +252,31 @@ var add_new_lineView = function(number,value,name){
 	line.appendChild(lineStruct);
 
 	struct.appendChild(line);
+
+	line.addEventListener("click", function(){select_line(number,name,line)},false);
+}
+
+var add_new_ifView = function(number){
+	var box = document.createElement("div");
+	box.className = "box";
+
+	var struct = document.getElementById("struct_area");
+	var line = document.createElement("div");
+	line.className = "if";
+	var lineNum = document.createElement("div");
+	lineNum.innerHTML = number;
+	lineNum.className = "line_number";
+	line.appendChild(lineNum);
+	var lineStruct = document.createElement("div");
+	lineStruct.className = "if_struct";
+	lineStruct.innerHTML = "NULL";
+
+	line.appendChild(lineStruct);
+	box.appendChild(line);
+	struct.appendChild(box);
+
+	var box_blank = document.createElement("div");
+
 
 	line.addEventListener("click", function(){select_line(number,name,line)},false);
 }
@@ -257,19 +317,28 @@ var select_line = function(number,name,line_area){
 	if(selected_line_num==number){
 		console.log(number + " is deselected.");
 		selected_line_num = -1;
-		line_area.className = "line";
+		if(lines[number].kind=="If"){
+			line_area.parentNode.className = "box";
+		}else{
+			line_area.className = "line";
+		}
 		tool_bar_switch('new');
 		delete_button_change('stop');
 	}else{
 		if(selected_line_num==-1){
 			//	ラインが選択されていない状態
-			console.log(number + " is selected.");
-			var el = document.querySelector(".line_selected");
-			if(el!=null)el.className = "line";
+			if(lines[number].kind=="If"){
+				console.log(number + " is If Block.");
+				line_area.parentNode.className = "box_selected";
+			}else{
+				console.log(number + " is selected.");
+				var el = document.querySelector(".line_selected");
+				if(el!=null)el.className = "line";
+				line_area.className = "line_selected";
+				tool_bar_switch('assign');
+				delete_button_change('active');
+			}
 			selected_line_num = number;
-			line_area.className = "line_selected";
-			tool_bar_switch('assign');
-			delete_button_change('active');
 		}else{
 			//	ほかのラインが選択されている状態（入れ替え）
 			line_change(number,selected_line_num);
@@ -279,6 +348,7 @@ var select_line = function(number,name,line_area){
 		}
 	}
 }
+
 
 var line_change = function(n,n0){
 	console.log(lines[n]);
@@ -290,7 +360,7 @@ var line_change = function(n,n0){
 	lines[n0].number = n0;
 
 
-	add_all_lineView();
+	add_all_lineView(add_div,lines);
 }
 
 var tb_new_var = function(){
@@ -350,6 +420,25 @@ var tb_fixed_str = function(){
 	}
 }
 
+var tb_new_if = function(){
+	var hoge = document.getElementById("new_if");
+	var txt = hoge.querySelector(".tool_text");
+	var input = hoge.querySelector(".tool_input");
+
+	if(txt.style.display=="none"){
+		txt.style.display = "block";
+		input.style.display = "none";
+	}else {
+		txt.style.display = "none";
+		input.style.display = "block";
+	}
+}
+
+var make_new_if = function(){
+	add_new_line("If",null,null);
+}
+
+
 var make_new_assign_line = function(){
 	var div = document.getElementById("assign_new_var");
 	var selector = div.querySelector("select");
@@ -360,23 +449,22 @@ var make_new_assign_line = function(){
 	}
 }
 
-var remake_assign_line = function(value){
+var remake_assign_line = function(value,type){
 	var l = selected_line_num;
 	if(l!=-1){
 		if(lines[l].kind=="Var"){
 			var name = lines[l].name;
 			add_new_line("Assign",name,"BEOFRE_ASSIGN");
-			tb_new_assign();
 			l = lines.length-1;
 		}	
 		var selected_line = lines[l];
 		console.log(selected_line);
 		lines[l].struct = new struct(value);
 		lines[l].assign_value = value;
-		lines[l].var_value.type = "Number";
+		lines[l].type = type;
 		selected_line_num = -1;
 		delete_button_change('stop');
-		add_all_lineView();
+		add_all_lineView(add_div,lines);
 	}else{
 		window.alert("Please Select Line...");
 	}
@@ -403,7 +491,7 @@ var new_var_hoge = function(){
 	var tbNewVar = document.getElementById("new_var");
 	add_new_line('Var',tbNewVar.querySelector("input").value,null);
 	tb_new_var();
-	add_all_lineView();
+	add_all_lineView(add_div,lines);
 }
 
 var tb_assign_fixed_num = function(e){
@@ -421,9 +509,29 @@ var assign_fixed_hoge = function(){
 			window.alert(num+" is not Number...");
 		}else{
 			num = parseFloat(num);
-			remake_assign_line(num);
+			remake_assign_line(num,"Number");
 			div.querySelector('input').value = "";
+			tb_fixed_num();
+			tool_bar_switch('new');
 		}
+}
+
+var tb_assign_fixed_string = function(e){
+	if(!e)
+		var e = window.event;
+	if(e.keyCode==13){
+		assign_fixed_string();
+	}
+}
+
+var assign_fixed_string = function(){
+	var div = document.getElementById("assign_str");
+	var str = div.querySelector("input").value;
+	
+	remake_assign_line(str,"String");
+	div.querySelector("input").value = "";
+	tb_fixed_str();
+	tool_bar_switch('new');
 }
 
 var delete_button_change = function(hoge){
@@ -436,7 +544,7 @@ var delete_line = function(){
 		var l = selected_line_num;
 		lines.splice(l);
 		selected_line_num = -1;
-		add_all_lineView();
+		add_all_lineView(add_div,lines);
 		document.getElementById("delete_button").className = 'stop';
 	}
 }
@@ -466,5 +574,24 @@ var put_code = function(){
 	document.getElementById("code_area").innerHTML = code;
 }
 
+var addIf = function(num){
+	if(lines[num].kind=="If"){
+		var div = document.querySelector(".box_selected");
+		add_new_lineView(1,"NEW_VARIABLE","a");
+		div.className = "box";
+		return "If";
+	}
+}
 
-init();
+
+window.onload = function(){
+	project = document.getElementById("project");
+	var t = document.getElementById("tb");
+	lines[0] = new line(0,"Start");
+	selected_line_num = -1;
+	variables = new Object();
+	add_div = document.querySelector('#struct_area');
+
+
+	console.log(add_div);
+}
