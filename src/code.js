@@ -91,16 +91,8 @@ var add_new_line = function(kind,name,value){
 	if(name){
 		if(variables[name]===undefined){
 			if(kind=="Var"){
-				if(document.querySelector(".box_selected")){
-					//var ls = lines[selected_line_num].inner_lines;
-					var ls = search_line(selected_line_num).inner_lines;
-					console.log(ls);
-					ls[ls.length] = new line(serial_number,kind,name,null);
-					//add_new_lineView(ls[ls.length-1].number,"NEW_VARIABLE",name);
-				}else{
-					lines[l] = new line(serial_number,kind,name,null);
-					//add_new_lineView(lines[l].number,"NEW_VARIABLE",name);
-				}
+				lines[l] = new line(serial_number,kind,name,null);
+
 				document.getElementById("new_var_input").value= "";
 				serial_number++;
 				add_all_lineView(add_div,lines);
@@ -108,11 +100,8 @@ var add_new_line = function(kind,name,value){
 			console.log(lines);
 		}else{
 			if(kind=="Assign"){
-				if(document.querySelector(".box_selected")){
-					var ls = search_line(selected_line_num).inner_lines;
-					ls[ls.length] = new line(serial_number,kind,name,value);
-				}else
-					lines[l] = new line(serial_number,kind,name,value);
+				lines[l] = new line(serial_number,kind,name,value);
+				
 				serial_number++;
 				add_all_lineView(add_div,lines);
 			}else{
