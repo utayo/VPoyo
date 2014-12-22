@@ -495,24 +495,22 @@ var make_new_assign_line = function(){
 }
 
 var remake_assign_line = function(value,type){
-
 	var l = selected_line_num;
 	if(l!=-1){
-		console.log(l);
 		var line = search_line(l);
+		var par = search_line(l,0,lines,null,"ParentBox");
 		if(line.kind=="Var"){
 			var name = line.name;
 			add_new_line("Assign",name,"BEOFRE_ASSIGN");
-			l = lines.length-1;
-			console.log(lines[l])
-		}
-		line.struct = new struct(value);
-		line.assign_value = value;
-		line.type = type;
-		delete_button_change('stop');
-		console.log(line);
-		search_line(l,lines,0,line);
+			l = par.length-1;
+		}	
+		var selected_line = par[l];
+		console.log(selected_line);
+		par[l].struct = new struct(value);
+		par[l].assign_value = value;
+		par[l].type = type;
 		selected_line_num = -1;
+		delete_button_change('stop');
 		add_all_lineView(add_div,lines);
 	}else{
 		window.alert("Please Select Line...");
@@ -652,7 +650,7 @@ var search_line = function(serial,layer,list,assign_line,type){
 				if(type=="Delete"){
 					list.splice(prop);
 				}
-				if(type=="ParentLine"){
+				if(type=="ParentBox"){
 					return list;
 				}else{
 					return list[prop];
@@ -661,9 +659,8 @@ var search_line = function(serial,layer,list,assign_line,type){
 		}else if(list[prop].kind=="If"){
 			console.log("IF BLOCK");
 			var res = search_line(serial,layer+1,list[prop].inner_lines,assign_line);
-			if(res){
+			if(res)
 				return res;
-			}
 		}
 	}
 
