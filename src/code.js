@@ -499,6 +499,7 @@ var remake_assign_line = function(value,type){
 	if(l!=-1){
 		var line = search_line(l);
 		var par = search_line(l,0,lines,null,"ParentBox");
+		console.log(l);
 		if(line.kind=="Var"){
 			var name = line.name;
 			add_new_line("Assign",name,"BEOFRE_ASSIGN");
@@ -649,8 +650,9 @@ var search_line = function(serial,layer,list,assign_line,type){
 				answer = list[prop];
 				if(type=="Delete"){
 					list.splice(prop);
-				}
-				if(type=="ParentBox"){
+					window.alert("（´・へ・｀）");
+				}else if(type=="ParentBox"){
+					window.alert("(^ω^)");
 					return list;
 				}else{
 					return list[prop];
@@ -658,7 +660,7 @@ var search_line = function(serial,layer,list,assign_line,type){
 			}
 		}else if(list[prop].kind=="If"){
 			console.log("IF BLOCK");
-			var res = search_line(serial,layer+1,list[prop].inner_lines,assign_line);
+			var res = search_line(serial,layer+1,list[prop].inner_lines,assign_line,type);
 			if(res)
 				return res;
 		}
