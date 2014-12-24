@@ -95,6 +95,33 @@
 	-moz-user-select: none;
 }
 
+.if_option{
+	width: 100px;
+	line-height: 46px;
+	float: right;
+	text-align: center;
+	user-select: none;
+	-moz-user-select: none;
+
+	display: none;
+}
+
+.if_option:hover{
+	color: red;
+}
+
+.if_rest{
+	width: 75%;
+	height: 100%;
+	float: right;
+}
+
+.if_rest_min{
+	width: 26%;
+	height: 100%;
+	float: right;
+}
+
 .box{
 	background-color: rgba(0,255,0,0.25);
 	

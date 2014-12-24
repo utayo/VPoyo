@@ -295,15 +295,31 @@ var add_new_ifView = function(serial,number,area,layer){
 	var lineStruct = document.createElement("div");
 	lineStruct.className = "if_struct";
 	lineStruct.innerHTML = "NULL";
+	var change_div = document.createElement("div");
+	change_div.className = "if_option";
+	change_div.innerHTML = "Exchange";
+	var insert_div = document.createElement("div");
+	insert_div.className = "if_option if_insert";
+	insert_div.innerHTML = "Insert";
+	var rest = document.createElement("div");
+	rest.className = "if_rest";
 
 	line.appendChild(lineStruct);
+	line.appendChild(change_div);
+	line.appendChild(insert_div);
+	line.appendChild(rest);
 	box.appendChild(line);
 	area.appendChild(box);
 
 	var box_blank = document.createElement("div");
 
 
-	line.addEventListener("click", function(){select_line(serial,name,line)},false);
+	change_div.addEventListener("click", function(){select_line(serial,name,line)},false);
+	insert_div.addEventListener("click", function(){insert_line(serial,line)},false);
+	rest.addEventListener("click", function(){select_line(serial,name,line)},false);
+	lineNum.addEventListener("click", function(){select_line(serial,name,line)},false);
+	line.addEventListener("mouseover", function(){if_option_view(serial,line,true)},false);
+	line.addEventListener("mouseout", function(){if_option_view(serial,line,false)},false);
 }
 
 var all_add_selector = function(){
@@ -365,6 +381,10 @@ var select_line = function(number,name,line_area){
 				var el = document.querySelector(".line_selected");
 				if(el!=null)el.className = "line";
 				line_area.className = "line_selected";
+				if(line_area.parentNode.className=="box"){
+					var if_div = line_area.parentNode.querySelector(".if_insert");
+					if_div.innerHTML = "Export";
+				}
 				tool_bar_switch('assign');
 				delete_button_change('active');
 			}
@@ -376,6 +396,42 @@ var select_line = function(number,name,line_area){
 			selected_line_num = -1;
 			tool_bar_switch('new');
 			delete_button_change('stop');
+		}
+	}
+}
+
+var insert_line = function(serial,line_div){
+	window.alert("You click "+serial+" :If");
+	var val = search_line(selected_line_num);
+	var if_line = search_line(serial);
+	var l = if_line.inner_lines.length;
+
+	search_line(selected_line_num,0,lines,null,"Delete");
+	if(line_div.querySelector(".if_insert").innerHTML=="Insert"){
+		if_line.inner_lines[l] = val;
+	}else{
+		lines[lines.length] = val;
+	}
+	selected_line_num = -1;
+
+	add_all_lineView(add_div,lines);
+}
+
+var if_option_view = function(serial,if_div,flag){
+	if(selected_line_num!=-1&&selected_line_num!=serial){
+		var ex = if_div.querySelectorAll(".if_option");
+		var res;
+		if(flag){
+			res = "block";
+			if(if_div.querySelector(".if_rest"))
+				if_div.querySelector(".if_rest").className = "if_rest_min";
+		}else{
+			res = "none";
+			if(if_div.querySelector(".if_rest_min"))
+				if_div.querySelector(".if_rest_min").className = "if_rest";
+		}
+		for(var i=0;i<ex.length;i++){
+			ex[i].style.display = res;
 		}
 	}
 }
