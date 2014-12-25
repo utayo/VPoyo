@@ -63,13 +63,19 @@
 
 .line_selected{
 	background-color: rgba(255,0,0,0.5);
-	height: 12%;
+	height: 46px;
 	width: 95%;
 	border-style: solid;
 	border-color: white;
 	border-width: 2px;
 	user-select: none;
 	-moz-user-select: none;
+}
+
+.line_blank{
+	height: 46px;
+	width: 20px;
+	float: left;
 }
 
 .line_number{
@@ -89,8 +95,35 @@
 	-moz-user-select: none;
 }
 
+.if_option{
+	width: 100px;
+	line-height: 46px;
+	float: right;
+	text-align: center;
+	user-select: none;
+	-moz-user-select: none;
+
+	display: none;
+}
+
+.if_option:hover{
+	color: red;
+}
+
+.if_rest{
+	width: 75%;
+	height: 100%;
+	float: right;
+}
+
+.if_rest_min{
+	width: 26%;
+	height: 100%;
+	float: right;
+}
+
 .box{
-	background-color: rgba(0,255,0,0.2);
+	background-color: rgba(0,255,0,0.25);
 	
 	border-style: solid;
 	
@@ -103,7 +136,7 @@
 }
 
 .box_selected{
-	background-color: rgba(0,255,0,0.2);
+	background-color: rgba(0,255,0,0.25);
 	
 	border-style: solid;
 	
@@ -116,7 +149,7 @@
 }
 
 .box_blank{
-	background-color: rgba(0,255,0,0.2);
+	background-color: rgba(0,255,0,0);
 	border-style: solid;
 	border-color: white;
 	border-top-color: ;

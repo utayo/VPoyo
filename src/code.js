@@ -1,6 +1,7 @@
 var project;
 var tool_bar_opened = "new";
 var selected_line_num;
+var serial_number;
 var add_div;
 
 var lines = [];
@@ -90,26 +91,18 @@ var add_new_line = function(kind,name,value){
 	if(name){
 		if(variables[name]===undefined){
 			if(kind=="Var"){
-				if(document.querySelector(".box_selected")){
-					var ls = lines[selected_line_num].inner_lines;
-					console.log(ls.length);
-					ls[ls.length] = new line(ls.length,kind,name,null);
-					//add_new_lineView(ls[ls.length-1].number,"NEW_VARIABLE",name);
-				}else{
-					lines[l] = new line(l,kind,name,null);
-					//add_new_lineView(lines[l].number,"NEW_VARIABLE",name);
-				}
+				lines[l] = new line(serial_number,kind,name,null);
+
 				document.getElementById("new_var_input").value= "";
+				serial_number++;
 				add_all_lineView(add_div,lines);
 			}
 			console.log(lines);
 		}else{
 			if(kind=="Assign"){
-				if(document.querySelector(".box_selected")){
-					var ls = lines[selected_line_num].inner_lines;
-					ls[ls.length] = new line(ls.length,kind,name,value);
-				}else
-					lines[l] = new line(l,kind,name,value);
+				lines[l] = new line(serial_number,kind,name,value);
+				
+				serial_number++;
 				add_all_lineView(add_div,lines);
 			}else{
 				window.alert(name + " is already exist...");
@@ -118,8 +111,15 @@ var add_new_line = function(kind,name,value){
 		}
 	}else{
 		if(kind=="If"){
-			lines[l] = new line(l,kind,null,null);
-			lines[l].inner_lines[0] = new line(0,"Start");
+			if(selected_line_num==-1){
+				lines[l] = new line(serial_number,kind,null,null);
+				lines[l].inner_lines[0] = new line(0,"Start");
+			}else{
+				var parent = search_line(selected_line_num).inner_lines;
+				parent[parent.length] = new line(serial_number,kind,null,null);
+				parent[parent.length-1].inner_lines[0] = new line(0,"Start");
+			}
+			serial_number++;
 			add_all_lineView(add_div,lines);
 		}else{
 			window.alert("Please insert variable name...");
@@ -182,11 +182,13 @@ var tool_bar_switch = function(name){
 	tool_bar_opened = name;
 }
 
-var add_all_lineView = function(area,list){
+var add_all_lineView = function(area,list,layer){
 	//var structArea = document.getElementById("struct_area");
 	console.log(list);
+	
 	if(area.className=="if")
 		area = area.parentNode;
+	
 	console.log(area);
 	var structArea = area;
 	var children = structArea.childNodes;
@@ -197,24 +199,33 @@ var add_all_lineView = function(area,list){
 		}
 	}
 
+	if(!layer)var layer = 0;
+
+	console.log("Layer::"+layer);
+
 	for(var prop in list){
-		if(list[prop].kind=="Var"){
-			console.log("::"+list[prop].name);
-			add_new_lineView(list[prop].number,"NEW_VARIABLE",list[prop].name,area);
-		}else if(list[prop].kind=="Assign"){
-			console.log(list[prop.value]);
-			add_new_lineView(list[prop].number,"ASSIGN_VARIABLE",lines[prop].name,area);
-		}else if(list[prop].kind=="If"){
-			add_new_ifView(list[prop].number);
-			var iflist = area.querySelectorAll('.if');
-			var hoge = iflist[iflist.length-1];
-			console.log(hoge);
-			add_all_lineView(hoge,list[prop].inner_lines);
+		if(list[prop]){
+			serial = list[prop].number;
+			if(list[prop].kind=="Var"){
+				console.log("::"+list[prop].name);
+				add_new_lineView(serial,prop,"NEW_VARIABLE",list[prop].name,area,list,layer);
+			}else if(list[prop].kind=="Assign"){
+				console.log(list[prop].value);
+				add_new_lineView(serial,prop,"ASSIGN_VARIABLE",list[prop].name,area,list,layer);
+			}else if(list[prop].kind=="If"){
+				add_new_ifView(serial,prop,area,layer);
+				var hoge = area.querySelectorAll('.if');
+				hoge = hoge[hoge.length-1];
+				console.log(area);
+				console.log(hoge);
+
+				add_all_lineView(hoge,list[prop].inner_lines,layer+1);
+			}
 		}
 	}
 }
 
-var add_new_lineView = function(number,value,name,area){
+var add_new_lineView = function(serial,number,value,name,area,parent,layer){
 	var struct = area;
 	/*
 	if(document.querySelector(".box_selected")){
@@ -222,9 +233,16 @@ var add_new_lineView = function(number,value,name,area){
 	}else{
 		struct = document.querySelector("#struct_area");
 	}*/
-	console.log(name);
+
 	var line = document.createElement("div");
 	line.className = "line";
+
+	for(var i=0;i<layer;i++){
+		var blank = document.createElement("div");
+		blank.className = "line_blank";
+		line.appendChild(blank);
+	}
+
 	var lineNum = document.createElement("div");
 	lineNum.innerHTML = number;
 	lineNum.className = "line_number";
@@ -232,19 +250,19 @@ var add_new_lineView = function(number,value,name,area){
 	var lineStruct = document.createElement("div");
 	lineStruct.className = "line_struct";
 
-	var str;
 
+	var str;
 
 	if(value=="NEW_VARIABLE"){
 		str = " : new variable";
 		all_add_selector(name);	//test code;
-	}else if(lines[number].assign_value=="BEFORE_ASSIGN"){
+	}else if(parent[number].assign_value=="BEFORE_ASSIGN"){
 		str = " = Empty!";
 	}else if(value=="ASSIGN_VARIABLE"){
-		if(lines[number].type=="String")
-			str = " = \"" + lines[number].assign_value + "\" : Assign Fixed String";
+		if(parent[number].type=="String")
+			str = " = \"" + parent[number].assign_value + "\" : Assign Fixed String";
 		else 
-			str = " = " + lines[number].assign_value + " : Assign Fixed Number";
+			str = " = " + parent[number].assign_value + " : Assign Fixed Number";
 	}
 
 	str = name + str;
@@ -253,16 +271,23 @@ var add_new_lineView = function(number,value,name,area){
 
 	struct.appendChild(line);
 
-	line.addEventListener("click", function(){select_line(number,name,line)},false);
+	line.addEventListener("click", function(){select_line(serial,name,line)},false);
 }
 
-var add_new_ifView = function(number){
+var add_new_ifView = function(serial,number,area,layer){
 	var box = document.createElement("div");
 	box.className = "box";
 
 	var struct = document.getElementById("struct_area");
 	var line = document.createElement("div");
 	line.className = "if";
+
+	for(var i=0;i<layer;i++){
+		var blank = document.createElement("div");
+		blank.className = "line_blank";
+		line.appendChild(blank);
+	}
+
 	var lineNum = document.createElement("div");
 	lineNum.innerHTML = number;
 	lineNum.className = "line_number";
@@ -270,15 +295,31 @@ var add_new_ifView = function(number){
 	var lineStruct = document.createElement("div");
 	lineStruct.className = "if_struct";
 	lineStruct.innerHTML = "NULL";
+	var change_div = document.createElement("div");
+	change_div.className = "if_option";
+	change_div.innerHTML = "Exchange";
+	var insert_div = document.createElement("div");
+	insert_div.className = "if_option if_insert";
+	insert_div.innerHTML = "Insert";
+	var rest = document.createElement("div");
+	rest.className = "if_rest";
 
 	line.appendChild(lineStruct);
+	line.appendChild(change_div);
+	line.appendChild(insert_div);
+	line.appendChild(rest);
 	box.appendChild(line);
-	struct.appendChild(box);
+	area.appendChild(box);
 
 	var box_blank = document.createElement("div");
 
 
-	line.addEventListener("click", function(){select_line(number,name,line)},false);
+	change_div.addEventListener("click", function(){select_line(serial,name,line)},false);
+	insert_div.addEventListener("click", function(){insert_line(serial,line)},false);
+	rest.addEventListener("click", function(){select_line(serial,name,line)},false);
+	lineNum.addEventListener("click", function(){select_line(serial,name,line)},false);
+	line.addEventListener("mouseover", function(){if_option_view(serial,line,true)},false);
+	line.addEventListener("mouseout", function(){if_option_view(serial,line,false)},false);
 }
 
 var all_add_selector = function(){
@@ -314,10 +355,12 @@ var add_test_line = function(){
 }
 
 var select_line = function(number,name,line_area){
+	console.log("serial:"+number);
 	if(selected_line_num==number){
 		console.log(number + " is deselected.");
 		selected_line_num = -1;
-		if(lines[number].kind=="If"){
+		var sel = search_line(number);
+		if(sel.kind=="If"){
 			line_area.parentNode.className = "box";
 		}else{
 			line_area.className = "line";
@@ -327,18 +370,26 @@ var select_line = function(number,name,line_area){
 	}else{
 		if(selected_line_num==-1){
 			//	ラインが選択されていない状態
-			if(lines[number].kind=="If"){
+			var sl = search_line(number,0);
+			if(sl){
+			if(sl.kind=="If"){
 				console.log(number + " is If Block.");
 				line_area.parentNode.className = "box_selected";
+				delete_button_change('active');
 			}else{
 				console.log(number + " is selected.");
 				var el = document.querySelector(".line_selected");
 				if(el!=null)el.className = "line";
 				line_area.className = "line_selected";
+				if(line_area.parentNode.className=="box"){
+					var if_div = line_area.parentNode.querySelector(".if_insert");
+					if_div.innerHTML = "Export";
+				}
 				tool_bar_switch('assign');
 				delete_button_change('active');
 			}
 			selected_line_num = number;
+			}
 		}else{
 			//	ほかのラインが選択されている状態（入れ替え）
 			line_change(number,selected_line_num);
@@ -349,16 +400,53 @@ var select_line = function(number,name,line_area){
 	}
 }
 
+var insert_line = function(serial,line_div){
+	window.alert("You click "+serial+" :If");
+	var val = search_line(selected_line_num);
+	var if_line = search_line(serial);
+	var l = if_line.inner_lines.length;
+
+	search_line(selected_line_num,0,lines,null,"Delete");
+	if(line_div.querySelector(".if_insert").innerHTML=="Insert"){
+		if_line.inner_lines[l] = val;
+	}else{
+		lines[lines.length] = val;
+	}
+	selected_line_num = -1;
+
+	add_all_lineView(add_div,lines);
+}
+
+var if_option_view = function(serial,if_div,flag){
+	if(selected_line_num!=-1&&selected_line_num!=serial){
+		var ex = if_div.querySelectorAll(".if_option");
+		var res;
+		if(flag){
+			res = "block";
+			if(if_div.querySelector(".if_rest"))
+				if_div.querySelector(".if_rest").className = "if_rest_min";
+		}else{
+			res = "none";
+			if(if_div.querySelector(".if_rest_min"))
+				if_div.querySelector(".if_rest_min").className = "if_rest";
+		}
+		for(var i=0;i<ex.length;i++){
+			ex[i].style.display = res;
+		}
+	}
+}
+
 
 var line_change = function(n,n0){
-	console.log(lines[n]);
-	console.log(lines[n0]);
-	var tmp = lines[n];
-	lines[n] = lines[n0];
-	lines[n].number = n;
-	lines[n0] = tmp;
-	lines[n0].number = n0;
+	//	selected_lineと選択されたlineを入れ替える
+	console.log(n+"<=>"+n0);
+	var nLine = search_line(n,0);
+	var n0Line = search_line(n0,0);
+	console.log(nLine.number+"<==>"+n0Line.number);
 
+	//search_line(n,0,lines,n0Line);
+	//search_line(n0,0,lines,nLine);
+	exchange_line(n,n0);
 
 	add_all_lineView(add_div,lines);
 }
@@ -375,6 +463,8 @@ var tb_new_var = function(){
 		ipt.querySelector("input").value = "";
 		txt.style.display = "none";
 		ipt.style.display = "block";
+		ipt.querySelector(".text").focus();
+		console.log(ipt.querySelector(".text"));
 	}
 }
 
@@ -452,16 +542,19 @@ var make_new_assign_line = function(){
 var remake_assign_line = function(value,type){
 	var l = selected_line_num;
 	if(l!=-1){
-		if(lines[l].kind=="Var"){
-			var name = lines[l].name;
+		var line = search_line(l);
+		var par = search_line(l,0,lines,null,"ParentBox");
+		console.log(l);
+		if(line.kind=="Var"){
+			var name = line.name;
 			add_new_line("Assign",name,"BEOFRE_ASSIGN");
-			l = lines.length-1;
+			l = par.length-1;
 		}	
-		var selected_line = lines[l];
+		var selected_line = par[l];
 		console.log(selected_line);
-		lines[l].struct = new struct(value);
-		lines[l].assign_value = value;
-		lines[l].type = type;
+		par[l].struct = new struct(value);
+		par[l].assign_value = value;
+		par[l].type = type;
 		selected_line_num = -1;
 		delete_button_change('stop');
 		add_all_lineView(add_div,lines);
@@ -491,7 +584,7 @@ var new_var_hoge = function(){
 	var tbNewVar = document.getElementById("new_var");
 	add_new_line('Var',tbNewVar.querySelector("input").value,null);
 	tb_new_var();
-	add_all_lineView(add_div,lines);
+	//add_all_lineView(add_div,lines);
 }
 
 var tb_assign_fixed_num = function(e){
@@ -541,15 +634,17 @@ var delete_button_change = function(hoge){
 
 var delete_line = function(){
 	if(document.getElementById("delete_button").className=='active'){
+		/*
 		var l = selected_line_num;
 		lines.splice(l);
+		*/
+		search_line(selected_line_num,0,lines,null,"Delete");
+
 		selected_line_num = -1;
 		add_all_lineView(add_div,lines);
 		document.getElementById("delete_button").className = 'stop';
 	}
 }
-
-
 
 var make_code = function(){
 	console.log(lines);
@@ -583,12 +678,89 @@ var addIf = function(num){
 	}
 }
 
+var search_line = function(serial,layer,list,assign_line,type){
+	//	serial_numberでlineを検索する
+	if(layer==0||!list){
+		list = lines;
+	}
+
+	for(var prop in list){
+		if(list[prop].number==serial){
+			if(assign_line){
+				console.log(assign_line.name+"==>"+list[prop].name);
+				list[prop] = assign_line;
+				return true;
+			}else{
+				console.log("==>"+list[prop].number);
+				answer = list[prop];
+				if(type=="Delete"){
+					list.splice(prop);
+					window.alert("（´・へ・｀）");
+				}else if(type=="ParentBox"){
+					window.alert("(^ω^)");
+					return list;
+				}else{
+					return list[prop];
+				}
+			}
+		}else if(list[prop].kind=="If"){
+			console.log("IF BLOCK");
+			var res = search_line(serial,layer+1,list[prop].inner_lines,assign_line,type);
+			if(res)
+				return res;
+		}
+	}
+
+	if(layer==0&&!answer){
+		console.log(serial+" is NOT FOUND...");
+		//return -1;
+	}
+}
+
+var exchange_line = function(n1,n2,layer,list){
+	if(!list||!layer){
+		list = lines;
+		layer = 0;
+	}
+
+	var add,res,pl;
+
+	for(var prop in list){
+		if(list[prop].number==n1){
+			res = n2;
+			if(layer!=0){
+				return res;
+			}
+		}else if(list[prop].number==n2){
+			res = n1;
+			if(layer!=0){
+				return res;
+			}
+		}else if(list[prop].kind=="If"){
+			res = exchange_line(n1,n2,layer+1,list[prop].inner_lines);
+		}
+		if(res&&layer==0){
+			if(res==n1)add = n2;
+			else add = n1;
+			pl = search_line(res);
+			search_line(res,0,lines,search_line(add));
+			break;
+		}
+	}
+
+	if(layer==0){
+		search_line(add,0,lines,pl);
+	}
+	console.log(lines);
+}
+
 
 window.onload = function(){
 	project = document.getElementById("project");
 	var t = document.getElementById("tb");
 	lines[0] = new line(0,"Start");
 	selected_line_num = -1;
+	serial_number = 1;
 	variables = new Object();
 	add_div = document.querySelector('#struct_area');
 
