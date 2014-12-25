@@ -14,6 +14,7 @@
 	-moz-user-select: none;
 }
 
+
 #option_bar{
 	background-color: black;
 	width: 756px;
@@ -42,8 +43,17 @@
 #struct_area{
 	background-color: white;
 	width: 400px;
-	height: 420px;
+	height: 100%;
+	float: left;
 	overflow: scroll;
+}
+
+#desk_area{
+	width: 360px;
+	height: 450px;
+	float: left;
+	user-select: none;
+	-moz-user-select: none;
 }
 
 #struct_area:hover{
