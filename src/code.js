@@ -42,7 +42,7 @@ var struct = function(value){
 		if(prop!=0)
 			contents[contents.length] = new operator("+");
 		str[prop] = str[prop].split("-");
-		console.log(str[prop]);
+		//console.log(str[prop]);
 		for(var prop0 in str[prop]){
 			if(prop0!=0){
 				contents[contents.length] = new operator("-");
@@ -52,7 +52,7 @@ var struct = function(value){
 		}
 	}
 	this.contents = contents;
-	console.log(contents);
+	//console.log(contents);
 }
 
 var content = function(value){
@@ -97,7 +97,7 @@ var add_new_line = function(kind,name,value){
 				serial_number++;
 				add_all_lineView(add_div,lines);
 			}
-			console.log(lines);
+			//console.log(lines);
 		}else{
 			if(kind=="Assign"){
 				lines[l] = new line(serial_number,kind,name,value);
@@ -146,7 +146,7 @@ var add_expression = function(){
 	var opr = document.getElementById("opr").value;
 	var n = document.getElementById("selector").value;
 	v.value += opr + n;
-	console.log(v.value);
+	//console.log(v.value);
 }
 
 var tbn = function(name){
@@ -156,7 +156,7 @@ var tbn = function(name){
 var tool_bar_visible = function(){
 	var toolBar = document.getElementById("tool_bar");
 	var v;
-	console.log(toolBar.style.display);
+	//console.log(toolBar.style.display);
 	if(toolBar.style.display=="block") v="none";
 	else v="block";
 	toolBar.style.display=v;
@@ -184,12 +184,12 @@ var tool_bar_switch = function(name){
 
 var add_all_lineView = function(area,list,layer){
 	//var structArea = document.getElementById("struct_area");
-	console.log(list);
+	//console.log(list);
 	
 	if(area.className=="if")
 		area = area.parentNode;
 	
-	console.log(area);
+	//console.log(area);
 	var structArea = area;
 	var children = structArea.childNodes;
 	
@@ -201,23 +201,19 @@ var add_all_lineView = function(area,list,layer){
 
 	if(!layer)var layer = 0;
 
-	console.log("Layer::"+layer);
-
 	for(var prop in list){
 		if(list[prop]){
 			serial = list[prop].number;
 			if(list[prop].kind=="Var"){
-				console.log("::"+list[prop].name);
+				//console.log("::"+list[prop].name);
 				add_new_lineView(serial,prop,"NEW_VARIABLE",list[prop].name,area,list,layer);
 			}else if(list[prop].kind=="Assign"){
-				console.log(list[prop].value);
+				//console.log(list[prop].value);
 				add_new_lineView(serial,prop,"ASSIGN_VARIABLE",list[prop].name,area,list,layer);
 			}else if(list[prop].kind=="If"){
 				add_new_ifView(serial,prop,area,layer);
 				var hoge = area.querySelectorAll('.if');
 				hoge = hoge[hoge.length-1];
-				console.log(area);
-				console.log(hoge);
 
 				add_all_lineView(hoge,list[prop].inner_lines,layer+1);
 			}
@@ -301,13 +297,10 @@ var add_new_ifView = function(serial,number,area,layer){
 	var insert_div = document.createElement("div");
 	insert_div.className = "if_option if_insert";
 	insert_div.innerHTML = "Insert";
-	var rest = document.createElement("div");
-	rest.className = "if_rest";
 
 	line.appendChild(lineStruct);
 	line.appendChild(change_div);
 	line.appendChild(insert_div);
-	line.appendChild(rest);
 	box.appendChild(line);
 	area.appendChild(box);
 
@@ -316,7 +309,6 @@ var add_new_ifView = function(serial,number,area,layer){
 
 	change_div.addEventListener("click", function(){select_line(serial,name,line)},false);
 	insert_div.addEventListener("click", function(){insert_line(serial,line)},false);
-	rest.addEventListener("click", function(){select_line(serial,name,line)},false);
 	lineNum.addEventListener("click", function(){select_line(serial,name,line)},false);
 	line.addEventListener("mouseover", function(){if_option_view(serial,line,true)},false);
 	line.addEventListener("mouseout", function(){if_option_view(serial,line,false)},false);
@@ -355,7 +347,6 @@ var add_test_line = function(){
 }
 
 var select_line = function(number,name,line_area){
-	console.log("serial:"+number);
 	if(selected_line_num==number){
 		console.log(number + " is deselected.");
 		selected_line_num = -1;
@@ -423,12 +414,8 @@ var if_option_view = function(serial,if_div,flag){
 		var res;
 		if(flag){
 			res = "block";
-			if(if_div.querySelector(".if_rest"))
-				if_div.querySelector(".if_rest").className = "if_rest_min";
 		}else{
 			res = "none";
-			if(if_div.querySelector(".if_rest_min"))
-				if_div.querySelector(".if_rest_min").className = "if_rest";
 		}
 		for(var i=0;i<ex.length;i++){
 			ex[i].style.display = res;
@@ -442,7 +429,7 @@ var line_change = function(n,n0){
 	console.log(n+"<=>"+n0);
 	var nLine = search_line(n,0);
 	var n0Line = search_line(n0,0);
-	console.log(nLine.number+"<==>"+n0Line.number);
+	//console.log(nLine.number+"<==>"+n0Line.number);
 
 	//search_line(n,0,lines,n0Line);
 	//search_line(n0,0,lines,nLine);
@@ -464,7 +451,7 @@ var tb_new_var = function(){
 		txt.style.display = "none";
 		ipt.style.display = "block";
 		ipt.querySelector(".text").focus();
-		console.log(ipt.querySelector(".text"));
+		//console.log(ipt.querySelector(".text"));
 	}
 }
 
@@ -544,14 +531,14 @@ var remake_assign_line = function(value,type){
 	if(l!=-1){
 		var line = search_line(l);
 		var par = search_line(l,0,lines,null,"ParentBox");
-		console.log(l);
+
 		if(line.kind=="Var"){
 			var name = line.name;
 			add_new_line("Assign",name,"BEOFRE_ASSIGN");
 			l = par.length-1;
 		}	
 		var selected_line = par[l];
-		console.log(selected_line);
+
 		par[l].struct = new struct(value);
 		par[l].assign_value = value;
 		par[l].type = type;
@@ -694,8 +681,10 @@ var search_line = function(serial,layer,list,assign_line,type){
 				console.log("==>"+list[prop].number);
 				answer = list[prop];
 				if(type=="Delete"){
-					list.splice(prop);
+					list = list.splice(prop,1);
+					console.log(list);
 					window.alert("（´・へ・｀）");
+					return true;
 				}else if(type=="ParentBox"){
 					window.alert("(^ω^)");
 					return list;
@@ -751,7 +740,7 @@ var exchange_line = function(n1,n2,layer,list){
 	if(layer==0){
 		search_line(add,0,lines,pl);
 	}
-	console.log(lines);
+	//console.log(lines);
 }
 
 
