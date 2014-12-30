@@ -148,6 +148,7 @@ var add_new_varView = function(name,area){
 	var new_div = document.createElement("div");
 	new_div.className = "v_element";
 	new_div.innerHTML = name;
+	new_div.id = name;
 
 	area.appendChild(new_div);
 	area.addEventListener("mousedown", function(){drag_start(name)},false);
@@ -155,7 +156,27 @@ var add_new_varView = function(name,area){
 
 var drag_start = function(name){
 	console.log("Dragging : "+name);
+	var v = document.getElementById(name);
+	v.className = "v_selected";
+	var tar = document.getElementById("target");
+	tar.classList.add("target_over");
 	selected_var_name = name;
+}
+
+var drop = function(area){
+	if(selected_var_name){
+		console.log("Dropped : "+selected_var_name+" -> "+area);
+
+		selected_var_name = null;
+	}
+}
+
+var window_drop = function(){
+	var sel = document.querySelector(".v_selected");
+	if(sel){
+		sel.className = "v_element";
+		document.getElementById("target").classList.remove("target_over");
+	}
 }
 
 var test_assign = function(){
@@ -833,6 +854,7 @@ var exchange_line = function(n1,n2,layer,list){
 
 window.onload = function(){
 	project = document.getElementById("project");
+	window.addEventListener("mouseup", function(){window_drop()}, false);
 	var t = document.getElementById("tb");
 	lines[0] = new line(0,"Start");
 	selected_line_num = -1;
@@ -846,7 +868,7 @@ window.onload = function(){
 	co.addEventListener("click", function(){type_change("Condition")},false);
 
 	var target = document.getElementById("target");
-	target.addEventListener("mouseup",function(){console.log("（＾ω＾）")},false);
+	target.addEventListener("mouseup",function(){drop("target")},false);
 
 	console.log(add_div);
 }

@@ -95,6 +95,26 @@
 	line-height: 30px;
 	padding: 5px;
 	border-radius: 5px;
+	border: 2px solid rgba(0,0,0,0);
+	margin: 5px;
+	font-size: 16px;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+.v_element:hover{
+	border: 2px solid red;
+}
+
+.v_selected{
+	height: 40px;
+	min-width: 25%;
+	float: left;
+	background-color: rgba(255,0,0,0.3);
+	line-height: 30px;
+	padding: 5px;
+	border-radius: 5px;
+	border: 2px solid rgba(0,0,0,0);
 	margin: 5px;
 	font-size: 16px;
 	text-align: center;
@@ -109,10 +129,15 @@
 	line-height: 30px;
 	padding: 5px;
 	border-radius: 5px;
+	border: 2px solid transparent;
 	margin: 5px;
 	font-size: 16px;
 	text-align: center;
 	box-sizing: border-box;
+}
+
+.target_over:hover{
+	border: 2px solid red;
 }
 
 #edit_area{
