@@ -1,6 +1,7 @@
 var project;
 var tool_bar_opened = "new";
 var selected_line_num;
+var selected_var_name;
 var serial_number;
 var add_div;
 
@@ -89,7 +90,7 @@ var variable = function(_name){
 var add_new_line = function(kind,name,value){
 	var l = lines.length;
 	if(name){
-		if(variables[name]===undefined){
+		if(!variables[name]){
 			if(kind=="Var"){
 				lines[l] = new line(serial_number,kind,name,null);
 
@@ -127,6 +128,34 @@ var add_new_line = function(kind,name,value){
 		}
 	}
 	selected_line_num = -1;
+}
+
+var add_all_varView = function(){
+	var hoge = document.getElementById("variable_list");
+	while(hoge.firstChild)
+		hoge.removeChild(hoge.firstChild);
+
+	for(var prop in variables){
+		add_new_varView(variables[prop].name);
+	}
+}
+
+var add_new_varView = function(name,area){
+	if(!area){
+		area = document.getElementById("variable_list");
+	}
+
+	var new_div = document.createElement("div");
+	new_div.className = "v_element";
+	new_div.innerHTML = name;
+
+	area.appendChild(new_div);
+	area.addEventListener("mousedown", function(){drag_start(name)},false);
+}
+
+var drag_start = function(name){
+	console.log("Dragging : "+name);
+	selected_var_name = name;
 }
 
 var test_assign = function(){
@@ -182,6 +211,23 @@ var tool_bar_switch = function(name){
 	tool_bar_opened = name;
 }
 
+var type_change = function(area_name){
+	var as = document.getElementById("edit_assign");
+	var co = document.getElementById("edit_condition");
+
+	if(area_name=="Assign"){
+		as.style.display = "block";
+		co.style.display = "none";
+		document.getElementById("type_assign").className = "type_selected";
+		document.getElementById("type_condition").className = "type_unselected";
+	}else if(area_name=="Condition"){
+		as.style.display = "none";
+		co.style.display = "block";
+		document.getElementById("type_assign").className = "type_unselected";
+		document.getElementById("type_condition").className = "type_selected";
+	}
+}
+
 var add_all_lineView = function(area,list,layer){
 	//var structArea = document.getElementById("struct_area");
 	//console.log(list);
@@ -197,6 +243,7 @@ var add_all_lineView = function(area,list,layer){
 		while(structArea.firstChild){
 			structArea.removeChild(structArea.firstChild);
 		}
+		add_all_varView();
 	}
 
 	if(!layer)var layer = 0;
@@ -278,10 +325,13 @@ var add_new_ifView = function(serial,number,area,layer){
 	var line = document.createElement("div");
 	line.className = "if";
 
+	var rest_width = 300;
+
 	for(var i=0;i<layer;i++){
 		var blank = document.createElement("div");
 		blank.className = "line_blank";
 		line.appendChild(blank);
+		rest_width -= 10;
 	}
 
 	var lineNum = document.createElement("div");
@@ -290,25 +340,28 @@ var add_new_ifView = function(serial,number,area,layer){
 	line.appendChild(lineNum);
 	var lineStruct = document.createElement("div");
 	lineStruct.className = "if_struct";
-	lineStruct.innerHTML = "NULL";
+	lineStruct.innerHTML = "true";
 	var change_div = document.createElement("div");
 	change_div.className = "if_option";
 	change_div.innerHTML = "Exchange";
 	var insert_div = document.createElement("div");
 	insert_div.className = "if_option if_insert";
 	insert_div.innerHTML = "Insert";
+	var if_rest = document.createElement("div");
+	if_rest.className = "if_rest";
+	if_rest.style.width = rest_width+"px";
+
 
 	line.appendChild(lineStruct);
 	line.appendChild(change_div);
 	line.appendChild(insert_div);
+	line.appendChild(if_rest);
 	box.appendChild(line);
 	area.appendChild(box);
 
-	var box_blank = document.createElement("div");
-
-
 	change_div.addEventListener("click", function(){select_line(serial,name,line)},false);
 	insert_div.addEventListener("click", function(){insert_line(serial,line)},false);
+	if_rest.addEventListener("click", function(){select_line(serial,name,line)},false);
 	lineNum.addEventListener("click", function(){select_line(serial,name,line)},false);
 	line.addEventListener("mouseover", function(){if_option_view(serial,line,true)},false);
 	line.addEventListener("mouseout", function(){if_option_view(serial,line,false)},false);
@@ -366,18 +419,20 @@ var select_line = function(number,name,line_area){
 			if(sl.kind=="If"){
 				console.log(number + " is If Block.");
 				line_area.parentNode.className = "box_selected";
+				line_area = line_area.parentNode;
 				delete_button_change('active');
 			}else{
 				console.log(number + " is selected.");
 				var el = document.querySelector(".line_selected");
 				if(el!=null)el.className = "line";
 				line_area.className = "line_selected";
-				if(line_area.parentNode.className=="box"){
-					var if_div = line_area.parentNode.querySelector(".if_insert");
-					if_div.innerHTML = "Export";
-				}
 				tool_bar_switch('assign');
 				delete_button_change('active');
+			}
+			console.log(line_area);
+			if(line_area.parentNode.className=="box"){
+				var if_div = line_area.parentNode.querySelector(".if_insert");
+				if_div.innerHTML = "Export";
 			}
 			selected_line_num = number;
 			}
@@ -411,15 +466,20 @@ var insert_line = function(serial,line_div){
 var if_option_view = function(serial,if_div,flag){
 	if(selected_line_num!=-1&&selected_line_num!=serial){
 		var ex = if_div.querySelectorAll(".if_option");
+		var ex0 = if_div.querySelector(".if_rest");
 		var res;
+		var res0;
 		if(flag){
 			res = "block";
+			res0 = "none";
 		}else{
 			res = "none";
+			res0 = "block";
 		}
 		for(var i=0;i<ex.length;i++){
 			ex[i].style.display = res;
 		}
+		ex0.style.display = res0;
 	}
 }
 
@@ -433,9 +493,36 @@ var line_change = function(n,n0){
 
 	//search_line(n,0,lines,n0Line);
 	//search_line(n0,0,lines,nLine);
-	exchange_line(n,n0);
+	if(check_child(nLine,n0Line))exchange_line(n,n0);
 
 	add_all_lineView(add_div,lines);
+}
+
+var check_child = function(n,n0){
+	//どちらかがブロックで、もう片方を内包していないかをチェックする
+	/*
+	1 if(){
+		2 alert();
+	}
+	これで1と2を交換するとすごいことになるので避ける
+	*/
+	var check = function(a,b){
+		if(a.inner_lines){
+			var ln = a.inner_lines;
+			for(var prop in ln){
+				console.log(b.number+" ## "+ln[prop].number);
+				if(ln[prop].number==b.number){
+					window.alert("ERROR!");
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	if(!check(n,n0)||!check(n0,n))return false;
+
+	return true;
 }
 
 var tb_new_var = function(){
@@ -753,6 +840,13 @@ window.onload = function(){
 	variables = new Object();
 	add_div = document.querySelector('#struct_area');
 
+	var as = document.getElementById("type_assign");
+	as.addEventListener("click", function(){type_change("Assign")},false);
+	var co = document.getElementById("type_condition");
+	co.addEventListener("click", function(){type_change("Condition")},false);
+
+	var target = document.getElementById("target");
+	target.addEventListener("mouseup",function(){console.log("（＾ω＾）")},false);
 
 	console.log(add_div);
 }
