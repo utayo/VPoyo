@@ -37,13 +37,19 @@
 
 				<div id="desk_area">
 					<div id="variable_list_area">
-						<p id="v_title">Variable List</p>
-						<div id="variable_list">
+						<div class="as_select">
+							<div class="as_bar" id="var_list_bar">Variables</div>
+							<div class="as_bar as_unselected " id="other_list_bar">Other</div>
+						</div>
+						<div id="variable_list" class="list_area">
 							<!--変数リスト//-->
+						</div>
+						<div id="other_list" class="list_area">
+							<!--定数、文字列//-->
 						</div>
 					</div>
 					<div id="edit_area">
-						<div id="type_select">
+						<div class="type_select">
 							<div id="type_assign" class="type_selected">Assign</div>
 							<div id="type_condition" class="type_unselected">Condition</div>
 						</div>
@@ -51,8 +57,16 @@
 							<div style="width: 100%;height: 5%"></div>
 							<p style="float: left;margin-left: 5%;margin-right: 5%">Target </p>
 							<div class="v_null" id="target">Null</div>
+							<img src="trash.png" class="trash" title="Trash Box"></img>
+							<img src="restart.png" class="restart" title="Restart"></img>
+							<img src="insert.png" class="insert" title="Insert"></img>
+							<nobr>
+								<div id="assign_area">
+								</div>
+							</nobr>
 						</div>
-						<div class="edit_box" id="edit_condition"></div>
+						<div class="edit_box" id="edit_condition">
+						</div>
 					</div>
 				</div>
 			</div>

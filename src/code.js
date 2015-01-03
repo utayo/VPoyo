@@ -2,6 +2,7 @@ var project;
 var tool_bar_opened = "new";
 var selected_line_num;
 var selected_var_name;
+var dragged_area;
 var serial_number;
 var add_div;
 
@@ -138,6 +139,7 @@ var add_all_varView = function(){
 	for(var prop in variables){
 		add_new_varView(variables[prop].name);
 	}
+	vList_addButton();
 }
 
 var add_new_varView = function(name,area){
@@ -151,22 +153,56 @@ var add_new_varView = function(name,area){
 	new_div.id = name;
 
 	area.appendChild(new_div);
-	area.addEventListener("mousedown", function(){drag_start(name)},false);
+	new_div.addEventListener("mousedown", function(){drag_start(name,new_div)},false);
 }
 
-var drag_start = function(name){
+var drag_start = function(name,div){
 	console.log("Dragging : "+name);
-	var v = document.getElementById(name);
-	v.className = "v_selected";
+	console.log(div);
+	//var v = document.getElementById(name);
+	if(div)
+		div.className = "v_selected";
 	var tar = document.getElementById("target");
 	tar.classList.add("target_over");
+
+	var eList = document.querySelectorAll(".v_element");
+	for(var prop=0;prop<eList.length;prop++){
+		eList[prop].classList.add("target_over");
+	}
+
+	var nList = document.querySelectorAll(".v_null");
+	for(var prop=0;prop<nList.length;prop++){
+		nList[prop].classList.add("target_over");
+	}
+
+	var trash = document.querySelector(".trash");
+	trash.classList.add("target_over");
+
 	selected_var_name = name;
+	dragged_area = div;
 }
 
 var drop = function(area){
+	console.log(area);
 	if(selected_var_name){
-		console.log("Dropped : "+selected_var_name+" -> "+area);
-
+		if(dragged_area.parentNode.id!="variable_list"){
+			dragged_area.innerHTML = "Nullaaaa";
+			dragged_area.className = "v_null";
+		}
+		if(area=="target"){
+			window.alert("Dropped to Target");
+			var tar = document.getElementById("target");
+			tar.className = "v_element";
+			var sv = variables[selected_var_name];
+			if(sv.name)
+				tar.innerHTML = sv.name;
+			tar.addEventListener("mousedown", function(){drag_start(sv.name,tar)},false);
+		}else if(area){
+			area.className = "v_element";
+			var sv = variables[selected_var_name];
+			area.innerHTML = sv.name;
+			area.addEventListener("mousedown", function(){drag_start(sv.name,area)},false);
+		}
 		selected_var_name = null;
 	}
 }
@@ -177,6 +213,175 @@ var window_drop = function(){
 		sel.className = "v_element";
 		document.getElementById("target").classList.remove("target_over");
 	}
+
+	var eList = document.querySelectorAll(".v_element");
+	for(var prop=0;prop<eList.length;prop++){
+		if(eList[prop].classList.contains("target_over"))
+			eList[prop].classList.remove("target_over");
+	}
+
+	var nList = document.querySelectorAll(".v_null");
+	for(var prop=0;prop<nList.length;prop++){
+		nList[prop].classList.remove("target_over");
+	}
+
+	var trash = document.querySelector(".trash")
+	trash.classList.remove("target_over");
+}
+
+
+
+var trash_drop = function(){
+	var root = dragged_area;
+	if(root.parentNode.id=="variable_list"){
+		console.log("Delete Variable: "+selected_var_name);
+		delete variables[selected_var_name];
+		add_all_varView();	
+	}else{
+		dragged_area.innerHTML = "Null";
+		dragged_area.className = "v_null";
+	}
+	selected_var_name = null;
+}
+
+var add_nullset = function(){
+	var area = document.getElementById("assign_area");
+	if(area.querySelector(".v_add"))
+		area.removeChild(area.querySelector(".v_add"));
+	add_opr();
+	add_null();
+	add_addButton();
+}
+
+var add_null = function(area){
+	if(!area)
+		area = document.getElementById("assign_area");
+
+	var div = document.createElement("div");
+	div.className = "v_null";
+	div.innerHTML = "Null";
+	div.addEventListener("mouseup",function(){drop(div)},false);
+
+	area.appendChild(div);
+}
+
+var add_addButton = function(area){
+	if(!area)
+		area = document.getElementById("assign_area");
+
+	var div = document.createElement("div");
+	div.className = "v_add";
+	div.innerHTML = "＋"
+	div.addEventListener("click",function(){add_nullset()},false);
+
+	area.appendChild(div);
+}
+
+var assign_restart_window = function(){
+	var flag = window.confirm("エリアをリセットします。");
+	if(flag)
+		assign_restart();
+}
+
+var assign_restart = function(){
+	var area = document.getElementById("assign_area");
+	while(area.firstChild)
+		area.removeChild(area.firstChild);
+
+	add_null();
+	add_addButton();
+}
+
+var assign_export_window = function(){
+	if(!assign_export_check()){
+		window.alert("未定義の項目があります。");
+		return false;
+	}
+
+	if(window.confirm("代入を行います。")){
+		assign_export();
+	}
+}
+
+var assign_export_check = function(){
+	var target_area = document.getElementById("target");
+	var aList = document.getElementById("assign_area");
+	if(target_area.className=="v_null"||aList.querySelector(".v_null"))
+		return false;
+	
+	return true;
+}
+
+var assign_export = function(){
+	var target_area = document.getElementById("target");
+	var target;
+	target = target_area.innerHTML;
+	var aList = document.getElementById("assign_area").children;
+	//var hoge = target_area.innerHTML + "=";
+	var hoge = "";
+	for(var prop in aList){
+		var div = aList[prop];
+		if(div.className=="v_element")
+			hoge += div.innerHTML;
+		else if(div.className=="v_opr"){
+			var sel = div.querySelector("select");
+			hoge+= sel.options[sel.selectedIndex].value;
+		}
+	}
+	
+	add_new_line("Assign", target, hoge);
+}
+
+var vList_addButton = function(){
+	var area = document.getElementById("variable_list");
+
+	var div = document.createElement("div");
+	div.className = "v_add";
+	div.innerHTML = "＋";
+	div.addEventListener("click", function(){vList_addWindow()},false);
+
+	area.appendChild(div);
+}
+
+var vList_addWindow = function(){
+	var name = window.prompt("新規変数名を入力してください");
+	console.log(name);
+	if(!name){
+		vList_addWindow();
+		return false;
+	}else if(variables[name]){
+		window.alert(name+" は既に登録されています。");
+		return false;
+	}else{
+		vList_add(name);
+		return true;
+	}
+}
+
+var add_opr = function(area){
+	if(!area)
+		area = document.getElementById("assign_area");
+
+	var opr = ["+","-","*","/"];
+	var opr_value = ["＋","ー","×","÷"]
+
+	var div = document.createElement("div");
+	div.className = "v_opr";
+	var sel = document.createElement("select");
+	for(var prop in opr){
+		var hoge = document.createElement("option");
+		hoge.value = opr[prop];
+		hoge.innerHTML = opr_value[prop];
+		sel.appendChild(hoge);
+	}	
+
+	div.appendChild(sel);
+	area.appendChild(div);
+}
+
+var vList_add = function(name){
+	variables[name] = new variable(name);
+	add_all_varView();
 }
 
 var test_assign = function(){
@@ -246,6 +451,23 @@ var type_change = function(area_name){
 		co.style.display = "block";
 		document.getElementById("type_assign").className = "type_unselected";
 		document.getElementById("type_condition").className = "type_selected";
+	}
+}
+
+var tpChange0 = function(area_name){
+	var as0 = document.getElementById("variable_list");
+	var co0 = document.getElementById("other_list");
+
+	if(area_name=="varList"){
+		as0.style.display = "block";
+		co0.style.display = "none";
+		document.getElementById("var_list_bar").className = "as_bar";
+		document.getElementById("other_list_bar").className = "as_bar as_unselected";
+	}else if(area_name=="otherList"){
+		as0.style.display = "none";
+		co0.style.display = "block";
+		document.getElementById("var_list_bar").className = "as_bar as_unselected";
+		document.getElementById("other_list_bar").className = "as_bar";
 	}
 }
 
@@ -325,8 +547,10 @@ var add_new_lineView = function(serial,number,value,name,area,parent,layer){
 	}else if(value=="ASSIGN_VARIABLE"){
 		if(parent[number].type=="String")
 			str = " = \"" + parent[number].assign_value + "\" : Assign Fixed String";
-		else 
+		else if(parent[number].type=="Number")
 			str = " = " + parent[number].assign_value + " : Assign Fixed Number";
+		else
+			str = " = " + parent[number].assign_value;
 	}
 
 	str = name + str;
@@ -862,6 +1086,11 @@ window.onload = function(){
 	variables = new Object();
 	add_div = document.querySelector('#struct_area');
 
+	var as0 = document.getElementById("var_list_bar");
+	var co0 = document.getElementById("other_list_bar");
+	as0.addEventListener("click", function(){tpChange0("varList")},false);
+	co0.addEventListener("click", function(){tpChange0("otherList")},false);
+
 	var as = document.getElementById("type_assign");
 	as.addEventListener("click", function(){type_change("Assign")},false);
 	var co = document.getElementById("type_condition");
@@ -869,6 +1098,20 @@ window.onload = function(){
 
 	var target = document.getElementById("target");
 	target.addEventListener("mouseup",function(){drop("target")},false);
+
+	var insert = document.querySelector(".insert");
+	insert.addEventListener("click", function(){assign_export_window()},false);
+
+	var restart = document.querySelector(".restart");
+	restart.addEventListener("click", function(){assign_restart_window()}, false);
+
+	var trash = document.querySelector(".trash");
+	trash.addEventListener("mouseup", function(){trash_drop()},false);
+
+	add_null();
+	add_addButton();
+	vList_addButton();
+
 
 	console.log(add_div);
 }
