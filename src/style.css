@@ -530,6 +530,7 @@
 }
 
 .if_rest{
+	max-width: 300px;
 	height: 100%;
 	float: right;
 }

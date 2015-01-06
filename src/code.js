@@ -31,7 +31,7 @@ var line = function(_number,_kind,_name,_value){
 			window.alert("please insert assign value...");
 		}
 	}else if(_kind=="If"){
-		this.condition = [];
+		this.condition = "true";
 		this.inner_lines = [];
 	}
 }
@@ -473,6 +473,54 @@ var cond_restart = function(){
 	make_cAdd();
 }
 
+var cond_insert_window = function(){
+	var div = document.querySelector(".if_struct_selected");
+	var condArea = document.querySelector("#condition_area");
+	var fNull = condArea.querySelector("v_null");
+	if(!div){
+		window.alert("条件を設定する箇所を設定してくだい。");
+	}else if(fNull){
+		window.alert("未定義の箇所があります。");
+	}else{
+		var str = div.innerHTML;
+		var flag = window.confirm(str);
+		if(flag)
+			cond_insert(div);
+		else
+			window.alert("キャンセルされました。");
+	}
+}
+
+var cond_insert = function(div){
+	var str = "(";
+	var title = "";
+	var condArea = document.querySelector("#condition_area");
+	var boxList = condArea.querySelectorAll(".condition_box");
+
+	for(var i=0;i<boxList.length;i++){
+		var box = boxList[i];
+		if(i!=0){
+			str += ")"
+			var logOpr = condArea.querySelector(".c_logSelected").innerHTML;
+			str += logOpr + "(";
+		}
+		var eList = box.querySelectorAll(".v_element");
+		str += eList[0].innerHTML;
+		str += box.querySelector("select").value;
+		str += eList[1].innerHTML;
+	}
+	str += ")";
+	
+	div.className = "if_struct";
+	var hoge = search_line(selected_struct_num);
+	selected_struct_num = -1;
+	hoge.condition = str;
+	add_all_lineView(add_div,lines);
+
+	cond_restart();
+	console.log(str);
+}
+
 var vList_addButton = function(){
 	var area = document.getElementById("variable_list");
 
@@ -836,6 +884,7 @@ var add_new_lineView = function(serial,number,value,name,area,parent,layer){
 }
 
 var add_new_ifView = function(serial,number,area,layer){
+	var l = search_line(serial);
 	var box = document.createElement("div");
 	box.className = "box";
 
@@ -858,7 +907,7 @@ var add_new_ifView = function(serial,number,area,layer){
 	line.appendChild(lineNum);
 	var lineStruct = document.createElement("div");
 	lineStruct.className = "if_struct";
-	lineStruct.innerHTML = "true";
+	lineStruct.innerHTML = l.condition;
 	var change_div = document.createElement("div");
 	change_div.className = "if_option";
 	change_div.innerHTML = "Exchange";
