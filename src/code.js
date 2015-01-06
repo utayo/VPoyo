@@ -2,7 +2,9 @@ var project;
 var tool_bar_opened = "new";
 var selected_line_num;
 var selected_var_name;
+var selected_struct_num;
 var dragged_area;
+var dragged_fixed_value;
 var serial_number;
 var add_div;
 
@@ -156,10 +158,7 @@ var add_new_varView = function(name,area){
 	new_div.addEventListener("mousedown", function(){drag_start(name,new_div)},false);
 }
 
-var drag_start = function(name,div){
-	console.log("Dragging : "+name);
-	console.log(div);
-	//var v = document.getElementById(name);
+var drag_classChange = function(div){
 	if(div)
 		div.className = "v_selected";
 	var tar = document.getElementById("target");
@@ -177,34 +176,87 @@ var drag_start = function(name,div){
 
 	var trash = document.querySelector(".trash");
 	trash.classList.add("target_over");
+}
+
+var drag_start = function(name,div){
+	console.log("Dragging : "+name);
+	console.log(div);
+	//var v = document.getElementById(name);
+	drag_classChange(div);
 
 	selected_var_name = name;
 	dragged_area = div;
 }
 
+
+var num_drag_start = function(){
+	drag_classChange();
+	console.log("Dragging :Number")
+
+	dragged_area = "number";
+}
+
+var str_drag_start = function(){
+	drag_classChange();
+	console.log("Dragging :String");
+
+	dragged_area = "string";
+}
+
 var drop = function(area){
-	console.log(area);
+	var new_null;
 	if(selected_var_name){
 		if(dragged_area.parentNode.id!="variable_list"){
-			dragged_area.innerHTML = "Nullaaaa";
-			dragged_area.className = "v_null";
+			new_null = document.createElement("div");
+			if(dragged_area.id=="target")
+				new_null.id = "target";
+			new_null.className = "v_null";
+			new_null.innerHTML = "Nullaaa";
+			new_null.addEventListener("mouseup",function(){drop(new_null)},false);
+			var parent = dragged_area.parentNode;
+
+			parent.insertBefore(new_null, dragged_area);
+			parent.removeChild(dragged_area);	
 		}
-		if(area=="target"){
-			window.alert("Dropped to Target");
+	}
+
+
+	if(dragged_area=="number"){
+		if(area.id=="target")
+			window.alert("変数をいれてください。");
+		else
+			num_drop_window(area);
+	}else if(dragged_area=="string"){
+		if(area.id=="target")
+			window.alert("変数をいれてください。");
+		else
+			str_drop_window(area);
+	}else{
+		if(!selected_var_name)
+			return false;
+		var sv;
+		if(variables[selected_var_name]){
+			sv = variables[selected_var_name].name;
+		}else if(selected_var_name!="Null"){
+			sv = selected_var_name;
+		}
+		console.log(area);
+		if(area.id=="target"){
+			//window.alert("Dropped to Target");
 			var tar = document.getElementById("target");
 			tar.className = "v_element";
-			var sv = variables[selected_var_name];
-			if(sv.name)
-				tar.innerHTML = sv.name;
-			tar.addEventListener("mousedown", function(){drag_start(sv.name,tar)},false);
+			tar.innerHTML = sv;
+			tar.addEventListener("mousedown", function(){drag_start(sv,tar)},false);	
 		}else if(area){
+			if(!area.parentNode)
+				area = new_null;
 			area.className = "v_element";
-			var sv = variables[selected_var_name];
-			area.innerHTML = sv.name;
-			area.addEventListener("mousedown", function(){drag_start(sv.name,area)},false);
+			area.innerHTML = sv;
+			area.addEventListener("mousedown", function(){drag_start(sv,area);},false);
 		}
-		selected_var_name = null;
 	}
+	dragged_area = null;
+	selected_var_name = null;
 }
 
 var window_drop = function(){
@@ -229,6 +281,37 @@ var window_drop = function(){
 	trash.classList.remove("target_over");
 }
 
+var num_drop_window = function(area){
+	var num = window.prompt("実数を入力してください。");
+	if(num===null){
+		window.alert("キャンセルされました。");
+		}else{
+		num = parseFloat(num);
+		if(isNaN(num)){
+			window.alert("実数でないと判断されました。");
+		}else{
+			console.log(area);
+			if(area.id=="target")
+				area = document.getElementById("target");
+			area.className = "v_element";
+			area.innerHTML = num;
+			area.addEventListener("mousedown", function(){drag_start(num,area)},false);
+		}
+	}
+}
+
+var str_drop_window = function(area){
+	var str = window.prompt("文字列を入力してください。");
+	if(str==false){
+		window.alert("キャンセルされました。");
+		return false;
+	}
+	if(area.id=="target")
+		area = document.getElementById("target");
+	area.className = "v_element";
+	area.innerHTML = "\"" + str + "\"";
+	area.addEventListener("mousedown", function(){drag_start(str,area)},false);
+}
 
 
 var trash_drop = function(){
@@ -236,10 +319,22 @@ var trash_drop = function(){
 	if(root.parentNode.id=="variable_list"){
 		console.log("Delete Variable: "+selected_var_name);
 		delete variables[selected_var_name];
-		add_all_varView();	
+		add_all_varView();
 	}else{
+		/*
 		dragged_area.innerHTML = "Null";
 		dragged_area.className = "v_null";
+		*/
+		var new_null = document.createElement("div");
+		if(dragged_area.id=="target")
+			new_null.id = "target";
+		new_null.className = "v_null";
+		new_null.innerHTML = "Null";
+		new_null.addEventListener("mouseup",function(){drop(new_null)},false);
+		var parent = dragged_area.parentNode;
+
+		parent.insertBefore(new_null, dragged_area);
+		parent.removeChild(dragged_area);
 	}
 	selected_var_name = null;
 }
@@ -272,6 +367,7 @@ var add_addButton = function(area){
 	var div = document.createElement("div");
 	div.className = "v_add";
 	div.innerHTML = "＋"
+	div.title = "Add";
 	div.addEventListener("click",function(){add_nullset()},false);
 
 	area.appendChild(div);
@@ -284,12 +380,25 @@ var assign_restart_window = function(){
 }
 
 var assign_restart = function(){
+	var target = document.getElementById("target");
+	var new_null = document.createElement("div");
+	new_null.id = "target";
+	new_null.className = "v_null";
+	new_null.innerHTML = "Null";
+	new_null.addEventListener("mouseup",function(){drop(new_null)},false);
+	var parent = target.parentNode;
+
+	parent.insertBefore(new_null, target);
+	parent.removeChild(target);
+
 	var area = document.getElementById("assign_area");
 	while(area.firstChild)
 		area.removeChild(area.firstChild);
 
 	add_null();
 	add_addButton();
+	selected_var_name = null;
+	dragged_area = null;
 }
 
 var assign_export_window = function(){
@@ -338,6 +447,7 @@ var vList_addButton = function(){
 	var div = document.createElement("div");
 	div.className = "v_add";
 	div.innerHTML = "＋";
+	div.title = "変数を追加"
 	div.addEventListener("click", function(){vList_addWindow()},false);
 
 	area.appendChild(div);
@@ -345,17 +455,17 @@ var vList_addButton = function(){
 
 var vList_addWindow = function(){
 	var name = window.prompt("新規変数名を入力してください");
-	console.log(name);
-	if(!name){
+	if(name==""){
 		vList_addWindow();
 		return false;
 	}else if(variables[name]){
 		window.alert(name+" は既に登録されています。");
 		return false;
-	}else{
+	}else if(name){
 		vList_add(name);
 		return true;
 	}
+	return false;
 }
 
 var add_opr = function(area){
@@ -382,6 +492,90 @@ var add_opr = function(area){
 var vList_add = function(name){
 	variables[name] = new variable(name);
 	add_all_varView();
+}
+
+var select_struct = function(serial,line,area){
+	var target = document.querySelector("#cond_target");
+	console.log("hoge");
+	if(selected_struct_num==serial){
+		//選択されているstructがクリックされた場合。deselect.
+		area.className = "if_struct";
+		selected_struct_num = -1;
+
+		var div = document.createElement("div");
+		div.innerHTML = "Nullweeei";
+		div.className = "v_null";
+		div.id = "cond_target";
+		var p = target.parentNode;
+		p.insertBefore(div, target);
+		p.removeChild(target);
+	}else{
+		//cond_targetが未選択の場合。insert
+		//選択されているstructとクリックされたstructが違う場合。overwrite.
+		var hoge = document.querySelector(".if_struct_selected");
+		if(hoge)
+			hoge.className = "if_struct";
+		console.log(area);
+
+		selected_struct_num = serial;
+		area.className = "if_struct_selected";
+
+		var n = area.parentNode.querySelector(".if_number").innerHTML;
+		n = n.replace("<br>"," - ");
+		target.innerHTML = n;
+		target.className = "v_element";
+	}
+}
+
+var make_cBox = function(){
+	var area = document.getElementById("condition_area");
+	var selValue = ["<", ">", "<=", ">=", "==", "!="]
+
+	var box = document.createElement("div");
+	box.className = "condition_box";
+
+	var make_cElementDiv = function(){
+		var cElementDiv = document.createElement("div");
+		cElementDiv.className = "c_element_div";
+		var cNull = document.createElement("div");
+		cNull.className = "c_null";
+		cNull.innerHTML = "Null";
+		cElementDiv.appendChild(cNull);
+		return cElementDiv;
+	}
+
+	var ce0 = new make_cElementDiv();
+	var ce1 = new make_cElementDiv();
+
+	var cOpt = document.createElement("div");
+	cOpt.className = "c_opr";
+	var cSel = document.createElement("div");
+	cSel.className = "c_select";
+	var cSelector = document.createElement("select");
+	for(var prop in selValue){
+		var opt = document.createElement("option");
+		opt.innerHTML = selValue[prop];
+		opt.value = selValue[prop];
+		cSelector.appendChild(opt);
+	}
+	cSel.appendChild(cSelector);
+	cOpt.appendChild(cSel);
+
+	box.appendChild(ce0);
+	box.appendChild(cOpt);
+	box.appendChild(ce1);
+
+	area.appendChild(box);
+}
+
+var make_cAdd = function(){
+	var area = document.getElementById("condition_area");
+
+	var cAdd = document.createElement("div");
+	cAdd.className = "c_add";
+	cAdd.innerHTML = "＋";
+
+	area.appendChild(cAdd);
 }
 
 var test_assign = function(){
@@ -580,8 +774,8 @@ var add_new_ifView = function(serial,number,area,layer){
 	}
 
 	var lineNum = document.createElement("div");
-	lineNum.innerHTML = number;
-	lineNum.className = "line_number";
+	lineNum.innerHTML = number + "<br>If";
+	lineNum.className = "if_number";
 	line.appendChild(lineNum);
 	var lineStruct = document.createElement("div");
 	lineStruct.className = "if_struct";
@@ -610,6 +804,8 @@ var add_new_ifView = function(serial,number,area,layer){
 	lineNum.addEventListener("click", function(){select_line(serial,name,line)},false);
 	line.addEventListener("mouseover", function(){if_option_view(serial,line,true)},false);
 	line.addEventListener("mouseout", function(){if_option_view(serial,line,false)},false);
+
+	lineStruct.addEventListener("click", function(){select_struct(serial,line,lineStruct)}, false);
 }
 
 var all_add_selector = function(){
@@ -968,6 +1164,10 @@ var delete_line = function(){
 var make_code = function(){
 	console.log(lines);
 	var code = "";
+	for(var prop in variables){
+		code += ("var + " + variables[prop].name + ";</br>");
+	}
+
 	for(var prop in lines){
 		var l = lines[prop];
 		if(l.kind=="Var"){
@@ -1082,6 +1282,7 @@ window.onload = function(){
 	var t = document.getElementById("tb");
 	lines[0] = new line(0,"Start");
 	selected_line_num = -1;
+	selected_struct_num = -1;
 	serial_number = 1;
 	variables = new Object();
 	add_div = document.querySelector('#struct_area');
@@ -1096,8 +1297,14 @@ window.onload = function(){
 	var co = document.getElementById("type_condition");
 	co.addEventListener("click", function(){type_change("Condition")},false);
 
+	var other_num = document.getElementById("other_num");
+	other_num.addEventListener("mousedown", function(){num_drag_start()}, false);
+
+	var other_str = document.getElementById("other_str");
+	other_str.addEventListener("mousedown", function(){str_drag_start()}, false);
+
 	var target = document.getElementById("target");
-	target.addEventListener("mouseup",function(){drop("target")},false);
+	target.addEventListener("mouseup",function(){drop(target)},false);
 
 	var insert = document.querySelector(".insert");
 	insert.addEventListener("click", function(){assign_export_window()},false);
@@ -1111,6 +1318,9 @@ window.onload = function(){
 	add_null();
 	add_addButton();
 	vList_addButton();
+
+	make_cBox();
+	make_cAdd();
 
 
 	console.log(add_div);

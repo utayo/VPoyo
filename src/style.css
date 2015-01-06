@@ -3,6 +3,8 @@
 	width: 1000px;
 	height: 450px;
 	border-style: solid;
+
+	font-family: "Comic Sans MS",fantasy;
 }
 
 #project:hover{
@@ -112,6 +114,28 @@
 	border-radius: 5px;
 }
 
+.cond_trash{
+	float: right;
+	margin-right: 0px;
+	border: 2px solid transparent;
+	border-radius: 5px;
+}
+
+.cond_restart{
+	float: right;
+	margin-top: 3px;
+	margin-right: 0px;
+	border: 2px solid transparent;
+	border-radius: 5px;
+}
+
+.cond_insert{
+	float: right;
+	margin-right: 10px;
+	border: 2px solid transparent;
+	border-radius: 5px;
+}
+
 #v_title{
 	margin: 0;
 	font-size: 16px;
@@ -142,9 +166,31 @@
 	display: none;
 }
 
+.other_element{
+	float: left;
+	width: 48%;
+	height: 42%;
+	font-size: 20px;
+	text-align: center;
+	line-height: 42px;
+	box-sizing: border-box;
+	margin: 1%;
+	background-color: rgba(0,255,0,0.5);
+	border-radius: 5px;
+	border: 2px solid transparent;
+}
+
+#other_num:hover{
+	border: 2px solid red;
+}
+
+#other_str:hover{
+	border: 2px solid red;
+}
+
 .v_element{
 	height: 40px;
-	min-width: 25%;
+	width: 25%;
 	float: left;
 	background-color: rgba(0,0,255,0.3);
 	line-height: 30px;
@@ -155,6 +201,7 @@
 	font-size: 16px;
 	text-align: center;
 	box-sizing: border-box;
+	overflow: scroll;
 }
 
 .v_element:hover{
@@ -228,6 +275,8 @@
 	box-sizing: border-box;
 	padding-top: 4%;
 	padding-left: 2%;
+	border: 2px solid rgba(0,0,0,0.5);
+	border-radius: 3px;
 	float: left;
 	margin-top: 5%;
 	margin-left: 5%;
@@ -246,6 +295,80 @@
 	text-align: center;
 	width: 96%;
 	height: 70%;
+}
+
+#condition_area{
+	box-sizing: border-box;
+	padding-top: 4%;
+	padding-left: 2%;
+	float: left;
+	margin-top: 5%;
+	margin-left: 5%;
+	border: 2px solid rgba(0,0,0,0.5);
+	border-radius: 3px;
+	width: 90%;
+	height: 60%;
+	background-color: white;
+	overflow-y: scroll;
+	text-align: center;
+}
+
+.condition_box{
+	float: left;
+	width: 97%;
+	height: 40%;
+	margin-bottom: 5px;
+	background-color: rgba(255,165,0,0.5);
+	border-radius: 5px;
+}
+
+.c_element_div{
+	float: left;
+	width: 40%;
+	height: 100%;
+}
+
+.c_null{
+	height: 40px;
+	min-width: 80%;
+	float: left;
+	background-color: rgba(0,0,0,0.3);
+	line-height: 20px;
+	padding: 10px;
+	border-radius: 5px;
+	border: 2px solid transparent;
+	margin: 10px;
+	font-size: 16px;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+.c_opr{
+	float: left;
+	width: 20%;
+	height: 100%;
+}
+
+.c_select{
+	float: center;
+	line-height: 52px;
+}
+
+.c_add{
+	float: left;
+	height: 30px;
+	width: 40%;
+	background-color: white;
+	color: rgba(0,0,0,0.3);
+	line-height: 25px;
+	border-radius: 5px;
+	border: 2px dashed rgba(0,0,0,0.3);
+	margin-left: 30%;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	font-size: 16px;
+	text-align: center;
+	box-sizing: border-box;
 }
 
 .type_select{
@@ -302,10 +425,14 @@
 .line{
 	background-color: rgba(0,0,255,0.5) !important;
 	height: 46px;
-	width: 95%;
+	width: 92%;
 	border-style: solid;
 	border-color: white;
 	border-width: 2px;
+	border-radius: 10px;
+	margin-left: 3%;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	user-select: none;
 	-moz-user-select: none;
 }
@@ -313,7 +440,11 @@
 .line_selected{
 	background-color: rgba(255,0,0,0.5);
 	height: 46px;
-	width: 95%;
+	width: 92%;
+	border-radius: 10px;
+	margin-left: 3%;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	border-style: solid;
 	border-color: white;
 	border-width: 2px;
@@ -331,10 +462,9 @@
 	float: left;
 	height: 100%;
 	width: 46px;
+
 	text-align: center;
-	line-height:46px;
-	user-select: none;
-	-moz-user-select: none;
+	line-height:48px;
 }
 
 .line_struct{
@@ -400,8 +530,19 @@
 .if{
 	height: 46px;
 	width: 100%;
+	padding-top: 10px;
+	padding-bottom: 10px;
 	user-select: none;
 	-moz-user-select: none;
+}
+
+.if_number{
+	float: left;
+	height: 100%;
+	width: 46px;
+
+	text-align: center;
+	line-height:23px;
 }
 
 .if_selected{
@@ -418,6 +559,14 @@
 .if_struct{
 	line-height: 46px;
 	float: left;
+	user-select: none;
+	-moz-user-select: none;
+}
+
+.if_struct_selected{
+	line-height: 46px;
+	float: left;
+	color: red;
 	user-select: none;
 	-moz-user-select: none;
 }
