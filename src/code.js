@@ -176,6 +176,8 @@ var drag_classChange = function(div){
 
 	var trash = document.querySelector(".trash");
 	trash.classList.add("target_over");
+	var cTrash = document.querySelector(".cond_trash");
+	cTrash.classList.add("target_over");
 }
 
 var drag_start = function(name,div){
@@ -205,6 +207,9 @@ var str_drag_start = function(){
 
 var drop = function(area){
 	var new_null;
+
+	//	ドラッグされている変数があり、それがvariable_listから来ていない場合。
+	//	ドラッグ元のdivを元の状態（Null）に戻す。
 	if(selected_var_name){
 		if(dragged_area.parentNode.id!="variable_list"){
 			new_null = document.createElement("div");
@@ -219,7 +224,6 @@ var drop = function(area){
 			parent.removeChild(dragged_area);	
 		}
 	}
-
 
 	if(dragged_area=="number"){
 		if(area.id=="target")
@@ -279,6 +283,8 @@ var window_drop = function(){
 
 	var trash = document.querySelector(".trash")
 	trash.classList.remove("target_over");
+	var cTrash = document.querySelector(".cond_trash")
+	cTrash.classList.remove("target_over");
 }
 
 var num_drop_window = function(area){
@@ -441,6 +447,32 @@ var assign_export = function(){
 	add_new_line("Assign", target, hoge);
 }
 
+var cond_restart_window = function(){
+	var flag = window.confirm("エリアをリセットします。");
+	if(flag)
+		cond_restart();
+}
+
+var cond_restart = function(){
+	var target = document.getElementById("cond_target");
+	var new_cNull = document.createElement("div");
+	new_cNull.className = "v_null";
+	new_cNull.id = "cond_target";
+	new_cNull.innerHTML = "Null";
+
+	var parent = target.parentNode;
+	parent.insertBefore(new_cNull, target);
+	parent.removeChild(target);
+
+	var area = document.getElementById("condition_area");
+
+	while(area.firstChild)
+		area.removeChild(area.firstChild);
+
+	make_cBox();
+	make_cAdd();
+}
+
 var vList_addButton = function(){
 	var area = document.getElementById("variable_list");
 
@@ -538,8 +570,9 @@ var make_cBox = function(){
 		var cElementDiv = document.createElement("div");
 		cElementDiv.className = "c_element_div";
 		var cNull = document.createElement("div");
-		cNull.className = "c_null";
+		cNull.className = "v_null";
 		cNull.innerHTML = "Null";
+		cNull.addEventListener("mouseup",function(){drop(cNull)},false);
 		cElementDiv.appendChild(cNull);
 		return cElementDiv;
 	}
@@ -568,14 +601,60 @@ var make_cBox = function(){
 	area.appendChild(box);
 }
 
+var make_cSet = function(){
+	var area = document.getElementById("condition_area");
+	var button = area.querySelector(".c_add");
+	area.removeChild(button);
+
+	make_cLogOpr();
+	make_cBox();
+	//make_cAdd();
+}
+
 var make_cAdd = function(){
 	var area = document.getElementById("condition_area");
 
 	var cAdd = document.createElement("div");
 	cAdd.className = "c_add";
 	cAdd.innerHTML = "＋";
+	cAdd.addEventListener("click", make_cSet, false);
 
 	area.appendChild(cAdd);
+}
+
+var make_cLogOpr = function(){
+	var area = document.getElementById("condition_area");
+	var cLogOpr = document.createElement("div");
+	cLogOpr.className = "c_logOpr";
+
+	var and = document.createElement("div");
+	and.className = "c_logElement c_logSelected";
+	and.title = "かつ";
+	and.innerHTML = "&&";
+	and.addEventListener("click", function(){change_cLogOpr(and)}, false);
+
+	var or = document.createElement("div");
+	or.className = "c_logElement";
+	or.title = "または";
+	or.innerHTML = "||";
+	or.addEventListener("click", function(){change_cLogOpr(or)}, false);
+
+	cLogOpr.appendChild(and);
+	cLogOpr.appendChild(or);
+
+	area.appendChild(cLogOpr);
+}
+
+var change_cLogOpr = function(area){
+	var parent = area.parentNode;
+	var hoge = parent.querySelector(".c_logSelected");
+	if(!hoge){
+		console.log("Error...");
+		return false;
+	}
+
+	hoge.classList.remove("c_logSelected");
+	area.classList.add("c_logSelected");
 }
 
 var test_assign = function(){
@@ -888,7 +967,7 @@ var select_line = function(number,name,line_area){
 }
 
 var insert_line = function(serial,line_div){
-	window.alert("You click "+serial+" :If");
+	//window.alert("You click "+serial+" :If");
 	var val = search_line(selected_line_num);
 	var if_line = search_line(serial);
 	var l = if_line.inner_lines.length;
@@ -1215,7 +1294,6 @@ var search_line = function(serial,layer,list,assign_line,type){
 				if(type=="Delete"){
 					list = list.splice(prop,1);
 					console.log(list);
-					window.alert("（´・へ・｀）");
 					return true;
 				}else if(type=="ParentBox"){
 					window.alert("(^ω^)");
@@ -1314,6 +1392,12 @@ window.onload = function(){
 
 	var trash = document.querySelector(".trash");
 	trash.addEventListener("mouseup", function(){trash_drop()},false);
+
+	var condRestart = document.querySelector(".cond_restart");
+	condRestart.addEventListener("click", cond_restart_window,false);
+
+	var condTrash = document.querySelector(".cond_trash");
+	condTrash.addEventListener("mouseup", function(){trash_drop()},false);
 
 	add_null();
 	add_addButton();

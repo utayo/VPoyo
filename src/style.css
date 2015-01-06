@@ -271,6 +271,10 @@
 	border: 2px solid red;
 }
 
+#edit_condition #cond_target:hover{
+	border: 2px solid transparent;	
+}
+
 #assign_area{
 	box-sizing: border-box;
 	padding-top: 4%;
@@ -313,10 +317,20 @@
 	text-align: center;
 }
 
+#condition_area .v_null,
+#condition_area .v_element,
+#condition_area .v_selected{
+	height: 80%;
+	width: 80%;
+	line-height: 25px;
+	margin-left: 10%;
+	margin-top: 4%;
+}
+
 .condition_box{
 	float: left;
 	width: 97%;
-	height: 40%;
+	height: 30%;
 	margin-bottom: 5px;
 	background-color: rgba(255,165,0,0.5);
 	border-radius: 5px;
@@ -330,7 +344,7 @@
 
 .c_null{
 	height: 40px;
-	min-width: 80%;
+	width: 80px;
 	float: left;
 	background-color: rgba(0,0,0,0.3);
 	line-height: 20px;
@@ -346,12 +360,12 @@
 .c_opr{
 	float: left;
 	width: 20%;
-	height: 100%;
+	height: 80%;
 }
 
 .c_select{
 	float: center;
-	line-height: 52px;
+	line-height: 40px;
 }
 
 .c_add{
@@ -369,6 +383,32 @@
 	font-size: 16px;
 	text-align: center;
 	box-sizing: border-box;
+}
+
+.c_add:hover{
+	color: red;
+}
+
+.c_logOpr{
+	float: left;
+	height: 30px;
+	width: 80%;
+	background-color: gray;
+	color: white;
+	border-radius: 10px;
+	margin-left: 10%;
+	margin-top: 0px;
+	margin-bottom: 5px;
+}
+
+.c_logElement{
+	float: left;
+	height: 90%;
+	width: 50%;
+}
+
+.c_logSelected{
+	color: red;
 }
 
 .type_select{
@@ -572,7 +612,12 @@
 }
 
 .if_struct:hover{
+	cursor: pointer;
 	color: white;
+}
+
+.if_struct_selected:hover{
+	cursor: pointer;
 }
 
 #tool_bar{
