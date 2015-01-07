@@ -190,7 +190,7 @@
 
 .v_element{
 	height: 40px;
-	width: 25%;
+	min-width: 25%;
 	float: left;
 	background-color: rgba(0,0,255,0.3);
 	line-height: 30px;
@@ -464,6 +464,7 @@
 
 .line{
 	background-color: rgba(0,0,255,0.5) !important;
+	float: left;
 	height: 46px;
 	width: 92%;
 	border-style: solid;
@@ -479,6 +480,7 @@
 
 .line_selected{
 	background-color: rgba(255,0,0,0.5);
+	float: left;
 	height: 46px;
 	width: 92%;
 	border-radius: 10px;
@@ -499,6 +501,7 @@
 }
 
 .line_number{
+	cursor: move;
 	float: left;
 	height: 100%;
 	width: 46px;
@@ -537,12 +540,13 @@
 
 .box{
 	background-color: rgba(0,255,0,0.25);
+	float: left;
+	width: 95%;
 	
 	border-style: solid;
 	
 	border-color: white;
 	border-width: 2px;
-	position: relative;
 	overflow: hidden;
 	user-select: none;
 	-moz-user-select: none;
@@ -578,6 +582,7 @@
 }
 
 .if_number{
+	cursor: move;
 	float: left;
 	height: 100%;
 	width: 46px;
