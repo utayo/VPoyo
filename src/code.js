@@ -30,7 +30,7 @@ var line = function(_number,_kind,_name,_value){
 			console.log("please insert assign value...");
 			window.alert("please insert assign value...");
 		}
-	}else if(_kind=="If"){
+	}else if(_kind=="If"||_kind=="While"){
 		this.condition = "true";
 		this.inner_lines = [];
 	}
@@ -114,7 +114,7 @@ var add_new_line = function(kind,name,value){
 			}
 		}
 	}else{
-		if(kind=="If"){
+		if(kind=="If"||kind=="While"){
 			if(selected_line_num==-1){
 				lines[l] = new line(serial_number,kind,null,null);
 				lines[l].inner_lines[0] = new line(0,"Start");
@@ -896,7 +896,7 @@ var add_new_ifView = function(serial,number,area,layer){
 
 	var struct = document.getElementById("struct_area");
 	var line = document.createElement("div");
-	line.className = "if";
+	line.className = line.kind;
 
 	var rest_width = 300;
 
@@ -1176,10 +1176,27 @@ var tb_new_if = function(){
 	}
 }
 
+var tb_new_while = function(){
+	var hoge = document.getElementById("new_while");
+	var txt = hoge.querySelector(".tool_text");
+	var input = hoge.querySelector(".tool_input");
+
+	if(txt.style.display=="none"){
+		txt.style.display = "block";
+		input.style.display = "none";
+	}else {
+		txt.style.display = "none";
+		input.style.display = "block";
+	}
+}
+
 var make_new_if = function(){
 	add_new_line("If",null,null);
 }
 
+var make_new_while = function(){
+	add_new_line("While",null,null);
+}
 
 var make_new_assign_line = function(){
 	var div = document.getElementById("assign_new_var");

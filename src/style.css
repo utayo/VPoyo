@@ -780,6 +780,13 @@
 	float: center;
 }
 
+#while_button{
+	width: 90%;
+	height: 80%;
+	text-align: center;
+	float: center;
+}
+
 #assign_var_selector{
 	font-size: 14px;
 	width: 120px;
