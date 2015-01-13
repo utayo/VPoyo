@@ -31,7 +31,7 @@ var line = function(_number,_kind,_name,_value){
 			window.alert("please insert assign value...");
 		}
 	}else if(_kind=="If"||_kind=="While"){
-		this.condition = "true";
+		this.condition = "( true )";
 		this.inner_lines = [];
 	}
 }
@@ -802,7 +802,7 @@ var add_all_lineView = function(area,list,layer){
 	//var structArea = document.getElementById("struct_area");
 	//console.log(list);
 	
-	if(area.className=="if")
+	if(area.className=="if"||area.className=="while")
 		area = area.parentNode;
 	
 	//console.log(area);
@@ -827,9 +827,14 @@ var add_all_lineView = function(area,list,layer){
 			}else if(list[prop].kind=="Assign"){
 				//console.log(list[prop].value);
 				add_new_lineView(serial,prop,"ASSIGN_VARIABLE",list[prop].name,area,list,layer);
-			}else if(list[prop].kind=="If"){
-				add_new_ifView(serial,prop,area,layer);
-				var hoge = area.querySelectorAll('.if');
+			}else if(list[prop].kind=="If"||list[prop].kind=="While"){
+				add_new_boxView(serial,prop,area,layer);
+				var search_class;
+				if(list[prop].kind=="If")
+					search_class = ".if";
+				else if (list[prop].kind=="While")
+					search_class = ".while";
+				var hoge = area.querySelectorAll(search_class);
 				hoge = hoge[hoge.length-1];
 				console.log(hoge);
 
@@ -946,6 +951,64 @@ var add_new_ifView = function(serial,number,area,layer){
 	lineStruct.addEventListener("click", function(){select_struct(serial,line,lineStruct)}, false);
 }
 
+var add_new_boxView = function(serial,number,area,layer){
+	var l = search_line(serial);
+	var box = document.createElement("div");
+	box.className = "box";
+
+	var struct = document.getElementById("struct_area");
+	var line = document.createElement("div");
+	console.log(l);
+	if(l.kind=="If"){
+		line.className = "if";
+		box.style.backgroundColor = "rgba(0,255,0,0.25)"
+	}
+	else if(l.kind=="While"){
+		line.className = "while";
+		box.style.backgroundColor = "rgba(255,0,255,0.25)"
+	}
+
+	var rest_width = 300;
+
+	for(var i=0;i<layer;i++){
+		var blank = document.createElement("div");
+		blank.className = "line_blank";
+		line.appendChild(blank);
+		rest_width -= 10;
+	}
+
+	var lineNum = document.createElement("div");
+	lineNum.innerHTML = number + "<br>" + l.kind;
+	lineNum.className = "if_number";
+	line.appendChild(lineNum);
+	var lineStruct = document.createElement("div");
+	lineStruct.className = "if_struct";
+	lineStruct.innerHTML = l.condition;
+	console.log(l.condition);
+	var change_div = document.createElement("div");
+	change_div.className = "if_option";
+	change_div.innerHTML = "Exchange";
+	var insert_div = document.createElement("div");
+	insert_div.className = "if_option if_insert";
+	insert_div.innerHTML = "Insert";
+
+	line.appendChild(lineStruct);
+	line.appendChild(change_div);
+	line.appendChild(insert_div);
+	//line.appendChild(if_rest);
+	box.appendChild(line);
+	area.appendChild(box);
+
+	change_div.addEventListener("click", function(){select_line(serial,name,line)},false);
+	insert_div.addEventListener("click", function(){insert_line(serial,line)},false);
+	//if_rest.addEventListener("click", function(){select_line(serial,name,line)},false);
+	lineNum.addEventListener("click", function(){select_line(serial,name,line)},false);
+	line.addEventListener("mouseover", function(){if_option_view(serial,line,true)},false);
+	line.addEventListener("mouseout", function(){if_option_view(serial,line,false)},false);
+
+	lineStruct.addEventListener("click", function(){select_struct(serial,line,lineStruct)}, false);
+}
+
 var all_add_selector = function(){
 	//	セレクターを全削除してからvariablesの中身を追加
 	var selector = document.getElementById("assign_var_selector");
@@ -979,11 +1042,12 @@ var add_test_line = function(){
 }
 
 var select_line = function(number,name,line_area){
+	window.alert(number);
 	if(selected_line_num==number){
 		console.log(number + " is deselected.");
 		selected_line_num = -1;
 		var sel = search_line(number);
-		if(sel.kind=="If"){
+		if(sel.kind=="If"||sel.kind=="While"){
 			line_area.parentNode.className = "box";
 		}else{
 			line_area.className = "line";
@@ -995,8 +1059,8 @@ var select_line = function(number,name,line_area){
 			//	ラインが選択されていない状態
 			var sl = search_line(number,0);
 			if(sl){
-			if(sl.kind=="If"){
-				console.log(number + " is If Block.");
+			if(sl.kind=="If"||sl.kind=="While"){
+				console.log(number + " is " + sl.kind);
 				line_area.parentNode.className = "box_selected";
 				line_area = line_area.parentNode;
 				delete_button_change('active');
@@ -1391,14 +1455,13 @@ var search_line = function(serial,layer,list,assign_line,type){
 					console.log(list);
 					return true;
 				}else if(type=="ParentBox"){
-					window.alert("(^ω^)");
 					return list;
 				}else{
 					return list[prop];
 				}
 			}
-		}else if(list[prop].kind=="If"){
-			console.log("IF BLOCK");
+		}else if(list[prop].kind=="If"||list[prop].kind=="While"){
+			console.log(list[prop].kind + " BLOCK");
 			var res = search_line(serial,layer+1,list[prop].inner_lines,assign_line,type);
 			if(res)
 				return res;

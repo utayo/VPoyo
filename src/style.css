@@ -539,7 +539,6 @@
 }
 
 .box{
-	background-color: rgba(0,255,0,0.25);
 	float: left;
 	width: 95%;
 	
@@ -574,6 +573,15 @@
 }
 
 .if{
+	height: 46px;
+	width: 100%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	user-select: none;
+	-moz-user-select: none;
+}
+
+.while{
 	height: 46px;
 	width: 100%;
 	padding-top: 10px;
