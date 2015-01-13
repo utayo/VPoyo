@@ -581,6 +581,18 @@
 	-moz-user-select: none;
 }
 
+.add_else{
+	float: left;
+	height: 46px;
+	text-align: center;
+	line-height: 46px;
+	margin-left: 10px;
+}
+
+.add_else:hover{
+	color: white;
+}
+
 .while{
 	height: 46px;
 	width: 100%;

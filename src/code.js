@@ -33,6 +33,13 @@ var line = function(_number,_kind,_name,_value){
 	}else if(_kind=="If"||_kind=="While"){
 		this.condition = "( true )";
 		this.inner_lines = [];
+		if(_kind=="If"){
+			this.else_array = [];
+			this.else_array[0] = new line(0,"Start");
+		}
+	}else if(_kind=="Else"){
+		this.condition = "( true )";
+		this.inner_lines = [];
 	}
 }
 
@@ -90,7 +97,7 @@ var variable = function(_name){
 	//this.type = undefined;
 }
 
-var add_new_line = function(kind,name,value){
+var add_new_line = function(kind,name,value,parentIf){
 	var l = lines.length;
 	if(name){
 		if(!variables[name]){
@@ -114,7 +121,10 @@ var add_new_line = function(kind,name,value){
 			}
 		}
 	}else{
-		if(kind=="If"||kind=="While"){
+		if(parentIf){
+			parentIf.else_array[parentIf.else_array.length] = new line(serial_number,"If");
+			serial_number++;
+		}else if(kind=="If"||kind=="While"){
 			if(selected_line_num==-1){
 				lines[l] = new line(serial_number,kind,null,null);
 				lines[l].inner_lines[0] = new line(0,"Start");
@@ -798,14 +808,16 @@ var tpChange0 = function(area_name){
 	}
 }
 
-var add_all_lineView = function(area,list,layer){
+var add_all_lineView = function(area,list,layer,elseCount){
 	//var structArea = document.getElementById("struct_area");
 	//console.log(list);
 	
 	if(area.className=="if"||area.className=="while")
 		area = area.parentNode;
-	
-	//console.log(area);
+
+	if(!elseCount)
+		elseCount = 0;
+
 	var structArea = area;
 	var children = structArea.childNodes;
 	
@@ -828,7 +840,10 @@ var add_all_lineView = function(area,list,layer){
 				//console.log(list[prop].value);
 				add_new_lineView(serial,prop,"ASSIGN_VARIABLE",list[prop].name,area,list,layer);
 			}else if(list[prop].kind=="If"||list[prop].kind=="While"){
-				add_new_boxView(serial,prop,area,layer);
+				if(elseCount!=0)
+					add_new_boxView(serial,prop,area,layer,prop);
+				else	
+					add_new_boxView(serial,prop,area,layer,elseCount);
 				var search_class;
 				if(list[prop].kind=="If")
 					search_class = ".if";
@@ -839,6 +854,9 @@ var add_all_lineView = function(area,list,layer){
 				console.log(hoge);
 
 				add_all_lineView(hoge,list[prop].inner_lines,layer+1);
+				if(list[prop].else_array&&list[prop].else_array.length!=1){
+					add_all_lineView(hoge,list[prop].else_array,layer,elseCount+1);
+				}
 			}
 		}
 	}
@@ -895,6 +913,7 @@ var add_new_lineView = function(serial,number,value,name,area,parent,layer){
 	line.addEventListener("click", function(){select_line(serial,name,line)},false);
 }
 
+/*
 var add_new_ifView = function(serial,number,area,layer){
 	var l = search_line(serial);
 	var box = document.createElement("div");
@@ -927,11 +946,11 @@ var add_new_ifView = function(serial,number,area,layer){
 	var insert_div = document.createElement("div");
 	insert_div.className = "if_option if_insert";
 	insert_div.innerHTML = "Insert";
-	/*
+	
 	var if_rest = document.createElement("div");
 	if_rest.className = "if_rest";
 	if_rest.style.width = rest_width+"px";
-	*/
+	
 
 
 	line.appendChild(lineStruct);
@@ -950,11 +969,18 @@ var add_new_ifView = function(serial,number,area,layer){
 
 	lineStruct.addEventListener("click", function(){select_struct(serial,line,lineStruct)}, false);
 }
+*/
 
-var add_new_boxView = function(serial,number,area,layer){
+var add_new_boxView = function(serial,number,area,layer,elseCount){
 	var l = search_line(serial);
-	var box = document.createElement("div");
-	box.className = "box";
+	var box;
+	if(elseCount==0){
+		box = document.createElement("div");
+		box.className = "box";
+	}else{
+		box = document.querySelectorAll(".box");
+		box = box[box.length-1];
+	}
 
 	var struct = document.getElementById("struct_area");
 	var line = document.createElement("div");
@@ -978,7 +1004,10 @@ var add_new_boxView = function(serial,number,area,layer){
 	}
 
 	var lineNum = document.createElement("div");
-	lineNum.innerHTML = number + "<br>" + l.kind;
+	if(elseCount==0)
+		lineNum.innerHTML = number + "<br>" + l.kind;
+	else
+		lineNum.innerHTML = "else<br>If";
 	lineNum.className = "if_number";
 	line.appendChild(lineNum);
 	var lineStruct = document.createElement("div");
@@ -995,9 +1024,30 @@ var add_new_boxView = function(serial,number,area,layer){
 	line.appendChild(lineStruct);
 	line.appendChild(change_div);
 	line.appendChild(insert_div);
-	//line.appendChild(if_rest);
+
+	if(l.kind=="If"){
+		//	else と else if を追加するボタンを作る
+		if(elseCount==0){
+			var addElse = document.createElement("div");
+			addElse.innerHTML = "Add else";
+			addElse.className = "add_else";
+			addElse.addEventListener("click", function(){add_else(serial)}, false);
+
+			line.appendChild(addElse);
+		}else{
+			var removeElse = document.createElement("div");
+			removeElse.innerHTML = "Remove else";
+			removeElse.className = "add_else";
+			removeElse.addEventListener("click", function(){remove_else(serial,elseCount)},false);
+
+			line.appendChild(removeElse);
+		}
+	}
+
 	box.appendChild(line);
-	area.appendChild(box);
+
+	if(elseCount==0)
+		area.appendChild(box);
 
 	change_div.addEventListener("click", function(){select_line(serial,name,line)},false);
 	insert_div.addEventListener("click", function(){insert_line(serial,line)},false);
@@ -1009,12 +1059,27 @@ var add_new_boxView = function(serial,number,area,layer){
 	lineStruct.addEventListener("click", function(){select_struct(serial,line,lineStruct)}, false);
 }
 
+var add_else = function(serial){
+	var l = search_line(serial);
+	console.log(l.else_array.length);
+	add_new_line("If",null,null,l);
+	add_all_lineView(add_div,lines);
+}
+
+var remove_else = function(serial,count){
+	var l = search_line(serial,0,lines,null,"ParentBox");
+	console.log(count);
+	l = l.splice(count,1);
+	add_all_lineView(add_div,lines);
+}
+
 var all_add_selector = function(){
 	//	セレクターを全削除してからvariablesの中身を追加
 	var selector = document.getElementById("assign_var_selector");
 	while(selector.firstChild){
 		selector.removeChild(selector.firstChild);
 	}
+
 	for(var prop in variables){
 		var new_option = document.createElement("option");
 		new_option.innerHTML = variables[prop].name;
@@ -1042,7 +1107,6 @@ var add_test_line = function(){
 }
 
 var select_line = function(number,name,line_area){
-	window.alert(number);
 	if(selected_line_num==number){
 		console.log(number + " is deselected.");
 		selected_line_num = -1;
@@ -1465,6 +1529,12 @@ var search_line = function(serial,layer,list,assign_line,type){
 			var res = search_line(serial,layer+1,list[prop].inner_lines,assign_line,type);
 			if(res)
 				return res;
+			if(list[prop].else_array&&list[prop].else_array.length!=1){
+				var res = search_line(serial,layer+1,list[prop].else_array,assign_line,type);
+				if(res){
+					return res;
+				}
+			}
 		}
 	}
 
@@ -1481,6 +1551,7 @@ var exchange_line = function(n1,n2,layer,list){
 	}
 
 	var add,res,pl;
+	window.alert("change check");
 
 	for(var prop in list){
 		if(list[prop].number==n1){
@@ -1493,7 +1564,7 @@ var exchange_line = function(n1,n2,layer,list){
 			if(layer!=0){
 				return res;
 			}
-		}else if(list[prop].kind=="If"){
+		}else if(list[prop].kind=="If"||list[prop].kind=="While"){
 			res = exchange_line(n1,n2,layer+1,list[prop].inner_lines);
 		}
 		if(res&&layer==0){
