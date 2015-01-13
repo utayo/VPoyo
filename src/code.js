@@ -831,6 +831,7 @@ var add_all_lineView = function(area,list,layer){
 				add_new_ifView(serial,prop,area,layer);
 				var hoge = area.querySelectorAll('.if');
 				hoge = hoge[hoge.length-1];
+				console.log(hoge);
 
 				add_all_lineView(hoge,list[prop].inner_lines,layer+1);
 			}
@@ -896,7 +897,7 @@ var add_new_ifView = function(serial,number,area,layer){
 
 	var struct = document.getElementById("struct_area");
 	var line = document.createElement("div");
-	line.className = line.kind;
+	line.className = "if";
 
 	var rest_width = 300;
 
@@ -1057,7 +1058,8 @@ var if_option_view = function(serial,if_div,flag){
 		for(var i=0;i<ex.length;i++){
 			ex[i].style.display = res;
 		}
-		ex0.style.display = res0;
+		if(ex0)
+			ex0.style.display = res0;
 	}
 }
 
