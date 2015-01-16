@@ -565,8 +565,8 @@ var add_opr = function(area){
 	if(!area)
 		area = document.getElementById("assign_area");
 
-	var opr = ["+","-","*","/"];
-	var opr_value = ["＋","ー","×","÷"]
+	var opr = ["+","-","*","/","%"];
+	var opr_value = ["＋","ー","×","÷","％"]
 
 	var div = document.createElement("div");
 	div.className = "v_opr";
@@ -1446,14 +1446,20 @@ var delete_line = function(){
 }
 
 var make_code = function(){
+
 	var code_roop = function(layer,box){
 		var txt = "";
 		for(var prop in box){
 			var l = box[prop];
+			console.log(layer);
+			for(var i=0;i<layer;i++)
+				txt += "  ";
 			if(l.kind=="Assign"){
 				txt += l.name + "=" + l.assign_value + ";</br>";
 			}else if(l.kind=="If"){
 				txt += "if"+l.condition+"{</br>" + code_roop(layer+1,l.inner_lines) + "}</br>";
+			}else if(l.kind=="While"){
+				txt += "while"+l.condition+"{</br>"+code_roop(layer+1,l.inner_lines)+ "}</br>";
 			}
 		}
 		return txt;
