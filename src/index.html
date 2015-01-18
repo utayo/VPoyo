@@ -48,8 +48,10 @@
 							<!--定数、文字列//-->
 							<div class="other_element" id="other_num">Number</div>
 							<div class="other_element" id="other_str">String</div>
-							<div class="other_element" id="other_bool">Boolean</div>
-							<div class="other_element" id="other_oth">Others</div>
+							<!--
+								<div class="other_element" id="other_bool">Boolean</div>
+								<div class="other_element" id="other_oth">Others</div>
+							//-->
 						</div>
 					</div>
 					<div id="edit_area">
@@ -84,7 +86,6 @@
 			<div id="tool_bar" style="display:block">
 				<div id="tool_bar_header">
 					<a class="tool_link" onclick="tool_bar_switch('new')"><div class="tool_bar_button">New</div></a>
-					<a class="tool_link" onclick="tool_bar_switch('assign')"><div class="tool_bar_button">Assign</div></a>
 					<a class="tool_link" onclick="tool_bar_switch('other')"><div class="tool_bar_button">Other</div></a>
 				</div>
 
@@ -114,7 +115,7 @@
 							</div>
 							<div class="tool_blank"></div>
 						</div>
-						//-->
+						
 						<div id="ans" class="tool_area">
 
 							<div class="tool_blank"></div>
@@ -138,6 +139,7 @@
 							</div>
 							<div class="tool_blank"></div>
 						</div>
+						//-->
 
 						<div id="new_if" class="tool_area">
 							<div class="tool_blank"></div>
@@ -175,23 +177,6 @@
 							</div>
 							<div class="tool_input">
 								<input type="button" value="Make New While-Block" id="while_button" onclick="make_new_while()">
-							</div>
-							<div class="tool_blank"></div>
-						</div>
-
-						<div id="new_func" class="tool_area">
-							<div class="tool_blank"></div>
-							<div class="tool_box_area">
-								<a class="tool_link">
-								<div class="tool_box">
-									New</br>
-									Func
-								</div>
-								</a>
-							</div>
-							<div class="tool_text">
-								Declare New</br>
-								Function
 							</div>
 							<div class="tool_blank"></div>
 						</div>
