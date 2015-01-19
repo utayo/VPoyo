@@ -1557,7 +1557,6 @@ var exchange_line = function(n1,n2,layer,list){
 	}
 
 	var add,res,pl;
-	window.alert("change check");
 
 	for(var prop in list){
 		if(list[prop].number==n1){
